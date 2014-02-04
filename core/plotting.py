@@ -35,7 +35,7 @@ class FinPlotter:
 
     def _format_values(self):
         self.ax.fmt_xdata = DateFormatter('%Y-%m-%d')
-        self.ax.fmt_ydata = price
+        self.ax.fmt_ydata = self.data
         self.ax.grid(True)
         self.fig.autofmt_xdate()
 
@@ -54,16 +54,3 @@ class FinPlotter:
     @property
     def yearsFmt(self):
         return DateFormatter('%Y ')
-
-
-def plot_financial_series(series):
-    fig, ax = plt.subplots()
-    years    = YearLocator()   # every year
-months   = MonthLocator()  # every month
-yearsFmt = DateFormatter('%Y')
-
-ax.xaxis.set_major_locator(years)
-ax.xaxis.set_major_formatter(yearsFmt)
-ax.xaxis.set_minor_locator(months)
-ax.autoscale_view()
-
