@@ -1,125 +1,211 @@
+from concat import *
 import pandas as pd
 import numpy as np
-
-# from blvresearch.utils.risk_free_rates import RISK_FREE_RATES_
-
-
-# Determine frequency of data points
-# Available frequencies:
-# 'D'       daily frequency (original data)
-# 'W-SUN'   weekly frequency (sundays), the same as 'W'
-# 'W-FRI'   weekly frequency (fridays)
-# 'M'       monthly frequency
+import copy
 
 
-class Portfolio:
-    pass
-
-
-class DynamicBacktest:
-    """
-    to run dynamic backtest initiate a class that inherits from DynamicBacktest
-    overwriting _get_starting_points_and_holdings method and providing:
-    * total_output: original database
-    * holding_periods: number of periods a given portfolio should be holdings
-    * pause_periods: number of periods between the formation period and
-                     a period when stocks should be held
-    * entities: list of entities, if portfolios should be formed for a certain
-                subset, e.g. entities from Europe only
-    * data_frequency: provide frequency of returns, by default weekly returns
-    * weighting: weighting applied to portfolio members, value-weighting by
-                 default, possible also equal-weighting
-    * transaction_cost: not implemented
+class DynamicBacktest(object):  # pragma: no cover
 
     """
-    def __init__(self, total_output, data_frequency=None,
-                 holding_periods=1, pause_periods=1,
-                 entities=None, weighting='equal', transaction_cost=0):
+    def get_starting_points(self):
+        threshold = 0.02
+        news_cat = 1
+
+        def viable_news(x):
+            if type(x) == pd.core.frame.DataFrame:
+                viable = any(x.category == news_cat)
+            else:
+                viable = False
+            return viable
+
+        returns = self.rel > threshold
+        viable_news = self.news.applymap(viable_news)
+        starts = returns & viable_news
+        return starts
+    """
+
+    def __init__(self, total_output,
+                 holding_period, transaction_cost=0):
         self.o = total_output
-        self.data_freq = data_frequency
-        self.hold_per = holding_periods
-        self.pause_per = pause_periods
-        self.entities = entities
-        self.weight = weighting
-        self.trans_cost = transaction_cost
+        self.hold_per = holding_period
+        self.transaction_cost = transaction_cost
 
-    def run(self):
-        self.returns = self._get_returns_from_total_output()
-        starting_points = self._get_starting_points_and_holdings()
-        holdings = self._get_dataframe_of_holdings(starting_points)
-        returns = self.returns[holdings.applymap(bool)]
-        result = returns.mean(axis=1).dropna()
-        return result, result.cumsum()
+        self._add_data()
 
-    def _get_returns_from_total_output(self):
-        returns = self.o['abs_ret'].unstack(level=0)
-        if self.data_freq:
-            returns = returns.resample(self.data_freq, how='sum')
-        if self.entities:
-            return returns[self.entities]
-        return returns
+        self.holdings = pd.DataFrame(index=self.rel.index,
+                                     columns=self.rel.columns)
+        #hack for all falses
+        self.holdings = self.holdings == 1
 
-    def _get_dataframe_of_holdings(self, starting_points):
-        result = pd.DataFrame(data=False, index=self.returns.index,
-                              columns=self.returns.columns)
-        ind = result.index
-        for date, entities in starting_points.items():
-            start_loc = result.index.get_loc(date)
-            end_loc = start_loc + self.hold_per - 1
-            result[ind[start_loc]:ind[end_loc]][entities] = True
-        return result
+        self.props = pd.DataFrame(None,
+                                  index=self.holdings.index,
+                                  columns=['size',
+                                           'holdings',
+                                           'avg_beta',
+                                           'mcap',
+                                           'r2'],
+                                  dtype=object)
+        self._mean_rel_ret = pd.Series()
+        self._sum_rel_ret = pd.Series()
+        self.stats = dict()
 
-    def _get_starting_points_and_holdings(self):
-        raise NotImplementedError('overwrite this function')
+    def _add_data(self):
+        rel_ret = {k: v.rel_ret for k, v in self.o.items()}
+        self.rel = pd.DataFrame(rel_ret)
 
-    def _shift_and_trim_starting_points(self, series):
-        result = series.shift(self.pause_per + 1)
-        result = result.dropna()
-        return result[:-self.hold_per]
+        abs_ret = {k: v.abs_ret for k, v in self.o.items()}
+        self.abs = pd.DataFrame(abs_ret)
 
+        news = {k: v.news for k, v in self.o.items()}
+        self.news = pd.DataFrame(news)
 
+        mcap = {k: v.mcap for k, v in self.o.items()}
+        self.mcap = pd.DataFrame(mcap)
 
-class MarketPerformance:
+        r2 = {k: v.r2 for k, v in self.o.items()}
+        self.r2 = pd.DataFrame(r2)
 
-    def __init__(self, dynamic_backtest):
-        self.backtest = dynamic_backtest
+        beta = {k: v.beta_mkt for k, v in self.o.items()}
+        self.beta_mkt = pd.DataFrame(beta)
 
-    def get(self):
-        returns = self.backtest.returns
-        mkt_returns = self._calc_market_returns(returns)
+        volume = {k: v.relative_vol for k, v in self.o.items()}
+        self.volume = pd.DataFrame(volume)
 
-    def _calculate_market_returns(self):
-        if self.backtest.weight == 'equal':
-            return returns.mean(axis=1)
-        elif self.backtest_weight == 'value':
-            raise NotImplementedError('no value-weighting yet')
+        mfact = {k: v.fact_mkt for k, v in self.o.items()}
+        self.mfact = pd.DataFrame(mfact)
 
+    def add_portfolio(self):
+        starts = self.get_starting_points()
+        self.starts = starts
+        for e in starts.columns:
+            points = starts[e][starts[e]]
+            for d in points.index:
+                i = self.holdings.index.get_loc(d)
+                self.holdings.ix[i + 1:i + 1 + self.hold_per, e] = True
+        self._calculate_returns()
+        self._append_portfolio_summary()
 
-class PortfolioCharacteristics:
+    def _calculate_returns(self):
+        rel = self.rel.copy()
+        abs = self.abs.copy()
+        rel[self.holdings == False] = np.nan
+        abs[self.holdings == False] = np.nan
+        self._mean_rel_ret = rel.mean(axis=1)
+        self._sum_rel_ret = rel.sum(axis=1)
+        self._mean_abs_ret = abs.mean(axis=1)
+        self._sum_abs_ret = abs.sum(axis=1)
 
-    def __init__(self, portfolio_returns):
-        self.port_ret = portfolio_returns
+    def _append_portfolio_summary(self):
+        for d in self.holdings.index:
+            tmp = self.holdings.ix[d]
+            p = list(tmp[tmp == True].index)
+            if len(p) > 0:
+                self.props.ix[d, 'size'] = len(p)
+                self.props.ix[d, 'holdings'] = p
+                self.props.ix[d, 'avg_beta'] = self.beta_mkt.ix[d, p].mean()
+                self.props.ix[d, 'mcap'] = self.mcap.ix[d, p].mean()
+                self.props.ix[d, 'r2'] = self.r2.ix[d, p].mean()
 
-    def calculate(self):
-        return {'mean_return': self._mean_return,
-                'std_deviation': self._std_deviation}
-        # 'alpha', t_stat_alpha = self._calc_alphas()
-        # beta = self._calc_betas()
-        # sharpe = self._calc_sharpe_ratio()
-        # skew = self._calc_skeweness()
+    def _random_sample(self):
+        trials = pd.DataFrame()
+        i = 0
+        while i <= 5:
+            trial = pd.DataFrame(self._random_trial(), columns=[i])
+            trials = pd.concat([trials, trial])
+            i += 1
+        self.random_trials = trials
+        m = trials.sum()
+        m.sort()
+        self.stats = {'max_conf': m[-2:].mean(),
+                      'min_conf': m[:2].mean()}
+
+    def _random_trial(self):
+        trial = pd.Series()
+        # creating random_starts
+        starts = self.get_starting_points()
+        random_starts = copy.deepcopy(starts)
+        random_starts.values[:] = False
+        # getting initial date
+        for i, date in enumerate(starts.index):
+            dummy = starts.ix[i]
+            dummy = dummy[dummy == True]
+            if dummy.any() == True:
+                break
+        # getting the initial starts
+        port_size = len(dummy)
+        possible_stocks = self.rel.ix[date].dropna().index
+        random = np.random.rand(len(possible_stocks))
+        possible_stocks = pd.Series(random, index=possible_stocks)
+        possible_stocks.sort()
+        initial_list = list(possible_stocks.index[:port_size])
+        random_starts.ix[date, initial_list] = True
+        # getting the rest of random starts
+        for i, d in enumerate(random_starts.index):
+            if d > date:
+                temp = random_starts.ix[i - 1]
+                temp = temp[temp == True]
+                # starts from previous day
+                old_ones = starts.ix[i - 1]
+                old_ones = old_ones[old_ones == True]
+                old_ones = old_ones.index
+                # starts from current day
+                added_ones = starts.ix[i]
+                added_ones = added_ones[added_ones == True]
+                added_ones = added_ones.index
+                # new stocks added
+                new_ones = added_ones - old_ones
+                # get new random stocks
+                possible_stocks = self.rel.ix[i].dropna().index - temp.index
+                random = np.random.rand(len(possible_stocks))
+                possible_stocks = pd.Series(random, index=possible_stocks)
+                possible_stocks.sort()
+                random_temp1 = list(possible_stocks.index[:len(new_ones)])
+                # get new stocks out of old ones
+                the_same = old_ones & added_ones
+                random = np.random.rand(len(temp.index))
+                possible_stocks = pd.Series(random, index=temp.index)
+                possible_stocks.sort()
+                random_temp2 = list(possible_stocks.index[:len(the_same)])
+                random_temp = random_temp1 + random_temp2
+                random_starts.ix[i, random_temp] = True
+        rel = pd.DataFrame(index=self.rel.index, columns=self.rel.columns)
+        for sec in self.rel.columns:
+            rel[sec] = self.rel[sec][random_starts[sec]]
+        trial = rel.mean(axis=1).cumsum().dropna()
+        return trial
 
     @property
-    def _mean_return(self):
-        "values in percent and annualized"
-        result = self.port_ret.mean()
-        annualized = result * 12
-        return annualized * 100
+    def portfolio(self):
+        if not any(self._mean_rel_ret):
+            self.add_portfolio()
+        return self.props
 
     @property
-    def _std_deviation(self):
-        result = self.port_ret.std()
-        annualized = result * np.sqrt(12)
-        return annualized * 100
+    def mean_rel_ret(self):
+        if not any(self._mean_rel_ret):
+            self.add_portfolio()
+        return self._mean_rel_ret
 
-    def _calc_alphas(self):
-        pass
+    @property
+    def sum_rel_ret(self):
+        if not any(self._mean_rel_ret):
+            self.add_portfolio()
+        return self._sum_rel_ret
+
+    @property
+    def mean_abs_ret(self):
+        if not any(self._mean_rel_ret):
+            self.add_portfolio()
+        return self._mean_abs_ret
+
+    @property
+    def sum_abs_ret(self):
+        if not any(self._mean_rel_ret):
+            self.add_portfolio()
+        return self._sum_abs_ret
+
+    @property
+    def statistics(self):
+        if not self.stats:
+            self._random_sample()
+        return self.stats

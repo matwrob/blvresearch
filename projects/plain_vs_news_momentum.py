@@ -5,10 +5,12 @@ from blvresearch.core.dynamic_backtest import DynamicBacktest
 
 class OneMonthMomentumPortfolioWINNERS(DynamicBacktest):
 
+    HOLDING_PERIODS = 30
+
     def _get_starting_points_and_holdings(self):
         SIZE = lambda x: int(len(x) / 10)
         result = dict()
-        for k, v in self.returns.iterrows():
+        for k, v in self._ranking_period_returns.iterrows():
             v = v.dropna()
             v.sort(ascending=False)
             result[k] = list(v[:SIZE(v)].index)
@@ -21,7 +23,7 @@ class OneMonthMomentumPortfolioLOSERS(DynamicBacktest):
     def _get_starting_points_and_holdings(self):
         SIZE = lambda x: int(len(x) / 10)
         result = dict()
-        for k, v in self.returns.iterrows():
+        for k, v in self._ranking_period_returns.iterrows():
             v = v.dropna()
             v.sort(ascending=False)
             result[k] = list(v[-SIZE(v):].index)
