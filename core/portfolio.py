@@ -60,9 +60,8 @@ class PortfolioStrategy:
         self.output = bluevalor_model_output
 
     def get(self):
-        starting_points = self._get_starting_points()
-        result = self._shift_and_trim_starting_points(starting_points)
-        return result
+        result = self._get_starting_points()
+        self.positions = self._shift_and_trim_starting_points(starting_points)
 
     def _get_starting_points(self):
         "overwrite this function to implement your own strategy"
@@ -74,9 +73,8 @@ class PortfolioStrategy:
         return self._shift_and_trim_starting_points(pd.Series(result))
 
     def _shift_and_trim_starting_points(self, series):
-        result = series.shift(self.PAUSE_PERIODS + 1)
-        result = result.dropna()[:-self.HOLDING_PERIODS]
-        return result
+        result = series.shift(self.PAUSE_PERIODS + 1).dropna()
+        return result[:-self.HOLDING_PERIODS]
 
     @property
     def _rebalancing_days(self):
@@ -87,50 +85,6 @@ class PortfolioStrategy:
     @property
     def _date_index(self):
         return self.output.index.get_level_values(1)
-
-
-class StartingPoints:
-    """returns:
-    * time series of lists of entities (UNIVERSE_SPLIT_TYPE = 'absolute_size')
-    * dataframe indexed by timed with columns representing portfolios
-    (UNIVERSE_SPLIT_TYPE = 'quantile')
-
-    On init provide:
-    * dataframe of returns (indexed by time of a predetermined frequency)
-    * portfolio size (will be understood differently depending on
-                      UNIVERSE_SPLIT_TYPE variable)
-    'quantile' & portfolio_size = 10 =====> 10 portfolios
-    'absolute_size' & portfolio_size = 10 ======> portfolios with 10 stocks
-
-    based on a function _get_portfolios and global variable SIZE it
-
-    change rebalancing global value using usual pandas frequencies, this is
-    independent of data frequency
-
-    e.g. data frequency might be daily (ranking portfolio returns based on N
-    last days), but rebalancing might be performed on a monthly basis
-
-    """
-    REBALANCING = 'BM'
-    UNIVERSE_SPLIT_TYPE = 'quantile'  # or 'absolute_size'
-
-    def __init__(self, df_of_returns, portfolio_size):
-        self.ret = df_of_returns
-
-    def get(self):
-        SIZE = lambda x: int(len(x) / 10)
-        result = dict()
-        for k, v in self._ranking_period_returns.iterrows():
-            v = v.dropna()
-            v.sort(ascending=False)
-            result[k] = list(v[-SIZE(v):].index)
-        result = pd.Series(result)
-        return self._shift_and_trim_starting_points(result)
-
-    def _get_portfolios(self):
-        raise NotImplementedError('overwrite')
-
-
 
 
 class Portfolio:
@@ -145,7 +99,7 @@ class Portfolio:
     a set of portfolio return characteristics (e.g. alphas, Sharpe rat., etc.)
 
     """
-    def __init__(self, stock_returns, portfolio_strategy):
+    def __init__(self, portfolio_strategy):
         self.returns = stock_returns
         self.strategy = portfolio_strategy
         self.hold = holding_periods
@@ -160,6 +114,49 @@ class Portfolio:
     def _members_returns(self):
         "dataframe of returns"
         pass
+
+
+# class StartingPoints:
+#     """returns:
+#     * time series of lists of entities (UNIVERSE_SPLIT_TYPE = 'absolute_size')
+#     * dataframe indexed by timed with columns representing portfolios
+#     (UNIVERSE_SPLIT_TYPE = 'quantile')
+
+#     On init provide:
+#     * dataframe of returns (indexed by time of a predetermined frequency)
+#     * portfolio size (will be understood differently depending on
+#                       UNIVERSE_SPLIT_TYPE variable)
+#     'quantile' & portfolio_size = 10 =====> 10 portfolios
+#     'absolute_size' & portfolio_size = 10 ======> portfolios with 10 stocks
+
+#     based on a function _get_portfolios and global variable SIZE it
+
+#     change rebalancing global value using usual pandas frequencies, this is
+#     independent of data frequency
+
+#     e.g. data frequency might be daily (ranking portfolio returns based on N
+#     last days), but rebalancing might be performed on a monthly basis
+
+#     """
+#     REBALANCING = 'BM'
+#     UNIVERSE_SPLIT_TYPE = 'quantile'  # or 'absolute_size'
+
+#     def __init__(self, df_of_returns, portfolio_size):
+#         self.ret = df_of_returns
+
+#     def get(self):
+#         SIZE = lambda x: int(len(x) / 10)
+#         result = dict()
+#         for k, v in self._ranking_period_returns.iterrows():
+#             v = v.dropna()
+#             v.sort(ascending=False)
+#             result[k] = list(v[-SIZE(v):].index)
+#         result = pd.Series(result)
+#         return self._shift_and_trim_starting_points(result)
+
+#     def _get_portfolios(self):
+#         raise NotImplementedError('overwrite')
+
 
 
 # class QuantilePortfolios(Portfolios):
