@@ -67,7 +67,7 @@ class PortfolioStrategy:
         "overwrite this function to implement your own strategy"
         all_entities = list(set(self.output.index.get_level_values(0)))
         result = dict()
-        for day in self._rebalancing_days:
+        for day in self.rebalancing_days:
             random.shuffle(all_entities)
             result[day] = all_entities[:self.PORTFOLIO_SIZE]
         return self._shift_and_trim_starting_points(pd.Series(result))
@@ -77,30 +77,28 @@ class PortfolioStrategy:
         return result[:-self.HOLDING_PERIODS]
 
     @property
-    def _rebalancing_days(self):
+    def rebalancing_days(self):
         start_day, end_day = self._date_index[0], self._date_index[-1]
         return pd.date_range(start_day, end_day,
                              freq=self.REBALANCING_FREQUENCY)
 
     @property
     def _date_index(self):
-        return self.output.index.get_level_values(1)
+        return self.output.index.get_level_values(1).unique().order()
 
 
 class Portfolio:
     """represents the evolution of a portfolio of stocks over time
-
-    on init takes stock_returns and portfolio_strategy:
+    on init takes portfolio_strategy:
 
     .members          to see time series of entities sets on a daily basis
     .performance      to see time series of returns
 
     feed PortfolioCharacteristics class with Portfolio instance to obtain
-    a set of portfolio return characteristics (e.g. alphas, Sharpe rat., etc.)
+    a set of portfolio return characteristics (e.g. alpha, Sharpe ratio, etc.)
 
     """
     def __init__(self, portfolio_strategy):
-        self.returns = stock_returns
         self.strategy = portfolio_strategy
         self.hold = holding_periods
 
@@ -109,11 +107,34 @@ class Portfolio:
 
     @property
     def members(self):
-        pass
+        new_index = self._output_data.index.get_level_values(1)
+        result = self.strategy.positions.reindex(new_index, method='ffill')
+        return result
 
     def _members_returns(self):
         "dataframe of returns"
+
         pass
+
+    @property
+    def _output_data(self):
+        return self.strategy.output
+
+    @property
+    def holding_periods(self):
+        return self.strategy.HOLDING_PERIODS
+
+    @property
+    def pause_periods(self):
+        return self.strategy.PAUSE_PERIODS
+
+    @property
+    def size(self):
+        return self.strategy.PORTFOLIO_SIZE
+
+    @property
+    def rebalancing_frequency(self):
+        return self.strategy.REBALANCING_FREQUENCY
 
 
 # class StartingPoints:

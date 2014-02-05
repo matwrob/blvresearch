@@ -60,7 +60,7 @@ class TestPortfolioStrategy(unittest.TestCase):
 
     def test_rebalancing_days(self):
         expected = ['2003-01-31', '2003-02-28', '2003-03-31']
-        for i, d in enumerate(self.STRATEGY._rebalancing_days):
+        for i, d in enumerate(self.STRATEGY.rebalancing_days):
             self.assertEqual(d.strftime('%Y-%m-%d'), expected[i])
 
     def test_date_index(self):
