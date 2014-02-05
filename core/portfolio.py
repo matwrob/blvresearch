@@ -1,39 +1,19 @@
-
-# Determine frequency of data points
-# Available frequencies:
-# 'D'       daily frequency (original data)
-# 'W-SUN'   weekly frequency (sundays), the same as 'W'
-# 'W-FRI'   weekly frequency (fridays)
-# 'M'       monthly frequency
-
-
-# Determine frequency of rebalancing
-# By default:
-# 'BM'     business-end-of-the-month
-# also possible
-# 'BMS'    business-start-of-the-month
-
-# class Portfolio:
-#     pass
-
-
-# def aggregate_on_index(df):
-#     df.sort(inplace=True)
-#     df
+import pandas as pd
+import random
 
 
 class StockReturns:
-    """
-    container for returns; provide concat model output and return type on init:
+    """container for stock returns
+    provide Bluevalor Model data output and type of return on init
     types: 'abs_ret'   (default, total returns, Factset methodology)
            'rel_ret'   (returns relative to Blv benchmarks)
            'alpha'     (risk adjusted returns relative to Blv benchmarks)
 
     """
 
-    def __init__(self, total_output, type='abs_ret'):
+    def __init__(self, total_output, type_of_return='abs_ret'):
         self.o = total_output
-        self.type = type
+        self.type = type_of_return
 
     @property
     def monthly(self):
@@ -52,9 +32,65 @@ class StockReturns:
         return self.o[self.type].unstack(level=0)
 
 
-class StartingPoints:
+class PortfolioStrategy:
+    """determines a strategy for portfolio formation over time
+
+    takes Bluevalor Model data output on init since any strategy one wants to
+    test should utilize this data
+
+    possible to adjust other attributes:
+    * HOLDING_PERIODS
+    * PAUSE_PERIODS
+    * REBALANCING_FREQUENCY
+    * PORTFOLIO_SIZE
+
+    to use: overwrite _get_starting_points function with any kind of algorithm
+    that returns time series of lists of entities
+
+    _get_starting_points by default returns a random subset of (size
+    PORTFOLIO_SIZE) of all stocks from the universe for each rebalancing day
+
     """
-    returns:
+    HOLDING_PERIODS = 1
+    PAUSE_PERIODS = 1
+    REBALANCING_FREQUENCY = 'BM'
+    PORTFOLIO_SIZE = 20
+
+    def __init__(self, bluevalor_model_output):
+        self.output = bluevalor_model_output
+
+    def get(self):
+        starting_points = self._get_starting_points()
+        result = self._shift_and_trim_starting_points(starting_points)
+        return result
+
+    def _get_starting_points(self):
+        "overwrite this function to implement your own strategy"
+        all_entities = list(set(self.output.index.get_level_values(0)))
+        result = dict()
+        for day in self._rebalancing_days:
+            random.shuffle(all_entities)
+            result[day] = all_entities[:self.PORTFOLIO_SIZE]
+        return self._shift_and_trim_starting_points(pd.Series(result))
+
+    def _shift_and_trim_starting_points(self, series):
+        result = series.shift(self.PAUSE_PERIODS + 1)
+        result = result.dropna()[:-self.HOLDING_PERIODS]
+        return result
+
+    @property
+    def _rebalancing_days(self):
+        start_day, end_day = self._date_index[0], self._date_index[-1]
+        return pd.date_range(start_day, end_day,
+                             freq=self.REBALANCING_FREQUENCY)
+
+    @property
+    def _date_index(self):
+        return self.output.index.get_level_values(1)
+
+
+class StartingPoints:
+    """returns:
     * time series of lists of entities (UNIVERSE_SPLIT_TYPE = 'absolute_size')
     * dataframe indexed by timed with columns representing portfolios
     (UNIVERSE_SPLIT_TYPE = 'quantile')
@@ -93,26 +129,6 @@ class StartingPoints:
 
     def _get_portfolios(self):
         raise NotImplementedError('overwrite')
-
-
-class PortfolioStrategy:
-    """determines a strategy for portfolio formation over time
-    takes
-
-    core function by default takes a random subset of all stocks from the
-    universe, should be overwritten by other methodology that returns a time
-    series of lists of entities, this methodology can use any type of data
-    available in Bluevalor's Model data output
-
-    """
-    HOLDING_PERIODS = 1
-
-    def __init__(self, bluevalor_model_output):
-        self.output = bluevalor_model_output
-
-    def core_func(self):
-        "overwrite this function to implement your own strategy"
-
 
 
 
@@ -157,3 +173,25 @@ class Portfolio:
 #     def __init__(self)
 
 
+
+# Determine frequency of data points
+# Available frequencies:
+# 'D'       daily frequency (original data)
+# 'W-SUN'   weekly frequency (sundays), the same as 'W'
+# 'W-FRI'   weekly frequency (fridays)
+# 'M'       monthly frequency
+
+
+# Determine frequency of rebalancing
+# By default:
+# 'BM'     business-end-of-the-month
+# also possible
+# 'BMS'    business-start-of-the-month
+
+# class Portfolio:
+#     pass
+
+
+# def aggregate_on_index(df):
+#     df.sort(inplace=True)
+#     df
