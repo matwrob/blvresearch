@@ -85,6 +85,20 @@ class PortfolioStrategy:
         return self.output.index.get_level_values(1).unique().order()
 
 
+class MarketStrategy(PortfolioStrategy):
+    "create a market portfolio as a Portfolio based on MarketStrategy"
+
+    NAME = 'Benchmark strategy - hold portfolio of all securities'
+    HOLDING_PERIODS = 0
+    PAUSE_PERIODS = 0
+    RABALANCING_FREQUENCY = 'D'
+
+    def _get_positions(self):
+        all_entities = list(set(self.output.index.get_level_values(0)))
+        result = {day: all_entities for day in self.rebalancing_daysdict()
+        return pd.Series(result)
+
+
 class Portfolio:
     """represents the evolution of a portfolio of stocks over time
     on init takes portfolio_strategy:
