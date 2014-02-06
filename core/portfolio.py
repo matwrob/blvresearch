@@ -1,8 +1,10 @@
 from itertools import chain
 import pandas as pd
+import numpy as np
 import random
 
 from blvresearch.data.risk_free_rates import RISK_FREE_RATES
+from concat.core.regression import fastols
 
 class StockReturns:
     """container for stock returns
@@ -46,18 +48,20 @@ class PortfolioStrategy:
     * REBALANCING_FREQUENCY
     * PORTFOLIO_SIZE
 
-    to use: overwrite _get_starting_points function with any kind of algorithm
-    that returns time series of lists of entities
+    create your own strategy that inherits from PortfolioStrategy, overwrite
+    _get_positions function with your methodology, adjust other global
+    attributes according to your needs
 
-    _get_starting_points by default returns a random subset of (size
-    PORTFOLIO_SIZE) of all stocks from the universe for each rebalancing day
+    _get_positions must return a time series of lists of entities where index
+    is given by .rebalancing_days
 
     """
-    NAME = 'Default strategy - random sample of securities'
-    HOLDING_PERIODS = 1
+
+    NAME = 'PortfolioStrategy'
+    HOLDING_PERIODS = 0
     PAUSE_PERIODS = 0
-    REBALANCING_FREQUENCY = 'M'
-    PORTFOLIO_SIZE = 20
+    REBALANCING_FREQUENCY = 'D'
+    PORTFOLIO_SIZE = 0
 
     def __init__(self, bluevalor_model_output):
         self.output = bluevalor_model_output
@@ -67,13 +71,7 @@ class PortfolioStrategy:
         return self.NAME
 
     def _get_positions(self):
-        "overwrite this function to implement your own strategy"
-        all_entities = list(set(self.output.index.get_level_values(0)))
-        result = dict()
-        for day in self.rebalancing_days:
-            random.shuffle(all_entities)
-            result[day] = all_entities[:self.PORTFOLIO_SIZE]
-        return pd.Series(result)
+        raise NotImplementedError
 
     @property
     def rebalancing_days(self):
@@ -84,25 +82,6 @@ class PortfolioStrategy:
     @property
     def _date_index(self):
         return self.output.index.get_level_values(1).unique().order()
-
-
-class MarketStrategy(PortfolioStrategy):
-    "create a market portfolio as a Portfolio based on MarketStrategy"
-
-    NAME = 'Benchmark strategy - long positions in all securities'
-    HOLDING_PERIODS = 'Constant holding'
-    PAUSE_PERIODS = 'Adjust depending on strategy benchmarked against market'
-    REBALANCING_FREQUENCY = 'No rebalancing'
-    PORTFOLIO_SIZE = 'All securities available'
-
-    def _get_positions(self):
-        all_entities = list(set(self.output.index.get_level_values(0)))
-        result = {day: all_entities for day in self.rebalancing_days}
-        return pd.Series(result)
-
-    @property
-    def rebalancing_days(self):
-        return self._date_index
 
 
 class Portfolio:
@@ -167,24 +146,45 @@ class PortfolioCharacteristics:
         self.benchmark = benchmark_portfolio
 
     def get(self, portfolio):
+        self._load_returns(portfolio)
+        self.excess_over_risk_free = self._get_excess_over_risk_free()
+        self.excess_over_market = self._get_excess_over_market()
+        self.mean_yearly_excess_over_rf = self._get_mean_yearly_excess_rf()
+        self.mean_yearly_excess_over_mkt = self._get_mean_yearly_excess_mkt()
+        self.mean_yearly_std = self._get_mean_yearly_standard_deviation()
+        self.alpha, self.beta, self.r2 = self._run_regression()
+
+    def _load_returns(self, portfolio):
         self.portfolio_returns = portfolio.daily_performance()
         self.benchmark_returns = self.benchmark.daily_performance()
-        self.risk_free = RISK_FREE_RATES['daily']
-        self.excess_returns = self._get_excess_daily_returns()
-        self.mean_yearly_excess_return = self._get_mean_yearly_excess_return()
-        self.mean_yearly_std = self._get_mean_yearly_std()
+        self.risk_free = RISK_FREE_RATES['B']
+        self.bench_exc_ret = (self.benchmark_returns - self.risk_free).dropna()
 
-
-    def _get_excess_daily_returns(self):
-        result = self.portfolio_returns - RISK_FREE_RATES['B']
+    def _get_excess_over_risk_free(self):
+        result = self.portfolio_returns - self.risk_free
         return result.dropna()
 
-    def _get_mean_yearly_excess_return(self):
+    def _get_excess_over_market(self):
+        result = self.portfolio_returns - self.benchmark_returns
+        return result.dropna()
+
+    def _get_mean_yearly_excess_rf(self):
         "values in percentage and annualized"
-        result = self.excess_returns.resample('A', how='sum')
+        result = self.excess_over_risk_free.resample('A', how='sum')
+        return result.mean() * 100
+
+    def _get_mean_yearly_excess_mkt(self):
+        "values in percentage and annualized"
+        result = self.excess_over_market.resample('A', how='sum')
         return result.mean() * 100
 
     def _get_mean_yearly_standard_deviation(self):
         "values in percentage and annualized"
-        result = self.excess_returns.std()
-        return result * np.sqrt(12)
+        result = self.excess_over_risk_free.std()
+        return result * np.sqrt(12) * 100
+
+    def _run_regression(self):
+        y = self.excess_over_risk_free
+        x = self.bench_exc_ret
+        result = fastols.regress(y, x[y.index])
+        return result['a'], result['b1'], result['r2']
