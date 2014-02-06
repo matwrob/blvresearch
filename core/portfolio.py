@@ -123,7 +123,8 @@ class Portfolio:
         returns = self._members_returns.daily
         members = self.members
         result = {k: returns.loc[k][v].mean() for k, v in members.items()}
-        return pd.Series(result)
+        result = pd.Series(result).fillna(0)
+        return result
 
     @property
     def _members_returns(self):
@@ -169,25 +170,21 @@ class PortfolioCharacteristics:
         self.portfolio_returns = portfolio.daily_performance()
         self.benchmark_returns = self.benchmark.daily_performance()
         self.risk_free = RISK_FREE_RATES['daily']
+        self.excess_returns = self._get_excess_daily_returns()
         self.mean_yearly_excess_return = self._get_mean_yearly_excess_return()
         self.mean_yearly_std = self._get_mean_yearly_std()
-        # 'alpha', t_stat_alpha = self._calc_alphas()
-        # beta = self._calc_betas()
-        # sharpe = self._calc_sharpe_ratio()
-        # skew = self._calc_skeweness()
 
-    @property
+
+    def _get_excess_daily_returns(self):
+        result = self.portfolio_returns - RISK_FREE_RATES['B']
+        return result.dropna()
+
     def _get_mean_yearly_excess_return(self):
         "values in percentage and annualized"
-        result = self.portfolio_returns
-        annualized = result * 12
-        return annualized * 100
+        result = self.excess_returns.resample('A', how='sum')
+        return result.mean() * 100
 
-    @property
-    def _std_deviation(self):
-        result = self.port_ret.std()
-        annualized = result * np.sqrt(12)
-        return annualized * 100
-
-    def _calc_alphas(self):
-        pass
+    def _get_mean_yearly_standard_deviation(self):
+        "values in percentage and annualized"
+        result = self.excess_returns.std()
+        return result * np.sqrt(12)
