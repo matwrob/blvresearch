@@ -95,7 +95,7 @@ class MarketStrategy(PortfolioStrategy):
 
     def _get_positions(self):
         all_entities = list(set(self.output.index.get_level_values(0)))
-        result = {day: all_entities for day in self.rebalancing_daysdict()
+        result = {day: all_entities for day in self.rebalancing_days}
         return pd.Series(result)
 
 
