@@ -121,7 +121,8 @@ class Portfolio:
 
     def daily_performance(self, how='mean'):
         returns = self._members_returns.daily
-        result = {date: row.mean() for date, row in returns.iterrows()}
+        members = self.members
+        result = {k: returns.loc[k][v].mean() for k, v in members.items()}
         return pd.Series(result)
 
     @property
@@ -132,7 +133,7 @@ class Portfolio:
     def members(self):
         new_index = self.strategy._date_index
         result = self.strategy.positions.reindex(new_index, method='ffill')
-        return result.shift(1)
+        return result.shift(1).dropna()
 
     @property
     def _static_members(self):
