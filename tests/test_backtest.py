@@ -1,15 +1,19 @@
-import unittest
+from itertools import product
 import pandas as pd
+import unittest
 
-from blvresearch.core.portfolio import StockReturns, PortfolioStrategy
+from blvresearch.core.portfolio import (
+    StockReturns, PortfolioStrategy, Portfolio
+)
 
 
 INDEX = pd.MultiIndex.from_tuples(
-    [('012ABC-D', d)
-     for d in pd.date_range('2003-01-02', '2003-03-31', freq='B')]
+    [v for v in product(['012ABC-D', '123BCD-E', '234CDE-F'],
+                        pd.date_range('2003-01-02', '2003-03-31', freq='B'))]
 )
-RETURNS = [1] * 63
-DATA = [[v, v * (-1), v * (-2)] for v in RETURNS]
+DATA = ([[1, 2, 3]] * 21 + [[2, 3, 4]] * 21 + [[3, 4, 5]] * 21 +
+        [[5, 4, 3]] * 21 + [[4, 3, 2]] * 21 + [[3, 2, 1]] * 21 +
+        [[0, 3, 1]] * 21 + [[6, 4, 2]] * 21 + [[3, 6, 9]] * 21)
 COLUMNS = ['abs_ret', 'rel_ret', 'alpha']
 MOCK_OUTPUT = pd.DataFrame(data=DATA, index=INDEX, columns=COLUMNS)
 
@@ -19,20 +23,22 @@ class TestReturns(unittest.TestCase):
     result = StockReturns(MOCK_OUTPUT)
 
     def test_monthly(self):
-        expected = pd.DataFrame([22, 20, 21],
-                                index=pd.date_range('2003-01-02',
-                                                    '2003-03-31',
-                                                    freq='BM'),
-                                columns=['012ABC-D'])
-        pd.np.testing.assert_array_equal(self.result.monthly, expected)
+        exp = pd.DataFrame(data=[[23, 109, 6], [40, 80, 120], [63, 63, 63]],
+                           index=pd.date_range('2003-01-02', '2003-03-31',
+                                               freq='BM'),
+                           columns=['012ABC-D', '123BCD-E', '234CDE-F'])
+        pd.np.testing.assert_array_equal(self.result.monthly, exp)
 
     def test_weekly(self):
-        expected = pd.DataFrame([2, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1],
-                                index=pd.date_range('2003-01-02',
-                                                    '2003-04-04',
-                                                    freq='W-FRI'),
-                                columns=['012ABC-D'])
-        pd.np.testing.assert_array_equal(self.result.weekly, expected)
+        exp = pd.DataFrame(data=[[2, 10, 0], [5, 25, 0], [5, 25, 0],
+                                 [5, 25, 0], [6, 24, 6], [10, 20, 30],
+                                 [10, 20, 30], [10, 20, 30], [10, 20, 30],
+                                 [15, 15, 15], [15, 15, 15], [15, 15, 15],
+                                 [15, 15, 15], [3, 3, 3]],
+                           index=pd.date_range('2003-01-02', '2003-04-06',
+                                               freq='W'),
+                           columns=['012ABC-D', '123BCD-E', '234CDE-F'])
+        pd.np.testing.assert_array_equal(self.result.weekly, exp)
 
     def test_daily(self):
         expected = MOCK_OUTPUT['abs_ret'].unstack(level=0)
@@ -41,25 +47,20 @@ class TestReturns(unittest.TestCase):
 
 class TestPortfolioStrategy(unittest.TestCase):
 
-    STRATEGY = PortfolioStrategy(MOCK_OUTPUT)
+    class MockStrategy(PortfolioStrategy):
+        HOLDING_PERIODS = 2
+        PAUSE_PERIODS = 1
+        REBALANCING_FREQUENCY = 'W-FRI'
 
-    def test_get_starting_points(self):
-        result = self.STRATEGY._get_starting_points()
-        expected = pd.Series()
-        pd.np.testing.assert_array_equal(result, expected)
+    STRATEGY = MockStrategy(MOCK_OUTPUT)
 
-    def test_shift_and_trim_starting_points(self):
-        TEMP_MOCK = pd.Series(data=['A', 'B', 'C', 'D', 'E', 'F'],
-                              index=pd.date_range('2003-01-02', '2003-06-30',
-                                                  freq='M'))
-        result = self.STRATEGY._shift_and_trim_starting_points(TEMP_MOCK)
-        expected = pd.Series({'2003-03-31': 'A',
-                              '2003-04-30': 'B',
-                              '2003-05-31': 'C'})
-        pd.np.testing.assert_array_equal(result, expected)
+    def test_positions(self):
+        self.assertIsInstance(self.STRATEGY.positions, pd.Series)
 
     def test_rebalancing_days(self):
-        expected = ['2003-01-31', '2003-02-28', '2003-03-31']
+        expected = ['2003-01-17', '2003-01-24', '2003-01-31', '2003-02-07',
+                    '2003-02-14', '2003-02-21', '2003-02-28', '2003-03-07',
+                    '2003-03-14']
         for i, d in enumerate(self.STRATEGY.rebalancing_days):
             self.assertEqual(d.strftime('%Y-%m-%d'), expected[i])
 
@@ -68,3 +69,42 @@ class TestPortfolioStrategy(unittest.TestCase):
         pd.np.testing.assert_array_equal(self.STRATEGY._date_index.values,
                                          expected.values)
 
+
+class TestPortfolio(unittest.TestCase):
+
+    class MockStrategy(PortfolioStrategy):
+        HOLDING_PERIODS = 2
+        PAUSE_PERIODS = 1
+        REBALANCING_FREQUENCY = 'W-FRI'
+
+    _STRATEGY = MockStrategy(MOCK_OUTPUT)
+    PORTFOLIO = Portfolio(_STRATEGY)
+
+    def test_daily_performance(self):
+        result = self.PORTFOLIO.daily_performance()
+        expected = pd.Series(data=[2] * 21 + [4] * 21 + [3] * 21,
+                             index=pd.date_range('2003-01-02', '2003-03-31',
+                                                 freq='B'))
+        pd.np.testing.assert_array_equal(result, expected)
+
+    def test_members(self):
+        no_investment_period = self.PORTFOLIO.members['2003-01-02':'2003-01-16']
+        pd.np.testing.assert_array_equal(no_investment_period.dropna(),
+                                         pd.Series())
+
+
+    def test_static_members(self):
+        expected = set(['012ABC-D', '123BCD-E', '234CDE-F'])
+        self.assertEqual(set(self.PORTFOLIO._static_members), expected)
+
+    def test_holding_periods(self):
+        self.assertEqual(self.PORTFOLIO.holding_periods, 2)
+
+    def test_pause_periods(self):
+        self.assertEqual(self.PORTFOLIO.pause_periods, 1)
+
+    def test_size(self):
+        self.assertEqual(self.PORTFOLIO.size, 20)
+
+    def test_rebalancing_frequency(self):
+        self.assertEqual(self.PORTFOLIO.rebalancing_frequency, 'W-FRI')
