@@ -25,7 +25,7 @@ class PeriodicBacktest:
     TRANSACTION_COSTS = 0
     TYPE_OF_RETURNS = 'abs_ret'
 
-    def __init__(self, total_output, entities=None):
+    def __init__(self, list_of_portfolios):
         self.o = total_output
         self.entities = entities
 
@@ -78,50 +78,3 @@ class PeriodicBacktest:
             return pd.rolling_sum(column, self.RANKING_PERIODS)
         result = self.returns.apply(func)
         return result.dropna()
-
-
-
-class MarketPerformance:
-
-    def __init__(self, dynamic_backtest):
-        self.backtest = dynamic_backtest
-
-    def get(self):
-        returns = self.backtest.returns
-        mkt_returns = self._calc_market_returns(returns)
-
-    def _calculate_market_returns(self):
-        if self.backtest.weight == 'equal':
-            return returns.mean(axis=1)
-        elif self.backtest_weight == 'value':
-            raise NotImplementedError('no value-weighting yet')
-
-
-class PortfolioCharacteristics:
-
-    def __init__(self, portfolio_returns):
-        self.port_ret = portfolio_returns
-
-    def calculate(self):
-        return {'mean_return': self._mean_return,
-                'std_deviation': self._std_deviation}
-        # 'alpha', t_stat_alpha = self._calc_alphas()
-        # beta = self._calc_betas()
-        # sharpe = self._calc_sharpe_ratio()
-        # skew = self._calc_skeweness()
-
-    @property
-    def _mean_return(self):
-        "values in percent and annualized"
-        result = self.port_ret.mean()
-        annualized = result * 12
-        return annualized * 100
-
-    @property
-    def _std_deviation(self):
-        result = self.port_ret.std()
-        annualized = result * np.sqrt(12)
-        return annualized * 100
-
-    def _calc_alphas(self):
-        pass

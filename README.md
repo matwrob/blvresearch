@@ -45,6 +45,19 @@ any global attributes defined in the class that inherits from PortfolioStrategy
 .PORTFOLIO_SIZE = number of entities held in a portfolios
 
 
+
+Explanation of RankingPeriod/RebalancingDay/PausePeriods/HoldingPeriods
+relationship:
+
+Rebalancing day vs holding period:
+rebalancing day is the day when we decide about the construction of our
+portfolio for the next holding period,
+we should hold this portfolio starting at the earliest on the next day
+this is obtained by shifting portfolio.members by 1 position
+
+
+
+
 PERIODIC BACKTEST:
 
 performs backtesting procedure based on total output data provided and optional
@@ -53,6 +66,11 @@ list of entities
 Stock returns are contained in a class StockReturns, which takes total output
 and optional return type (by default absolute return is used).
 Initialized StockReturns give access to .monthly, .weekly, and .daily returns.
+
+
+Any kind of backtest class should perform only "overview" type of operations
+using Portfolio/PortfolioStrategy objects
+
 
 
 PLOTTING:

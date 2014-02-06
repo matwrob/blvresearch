@@ -2,6 +2,7 @@ from itertools import chain
 import pandas as pd
 import random
 
+from blvresearch.data.risk_free_rates import RISK_FREE_RATES
 
 class StockReturns:
     """container for stock returns
@@ -54,8 +55,8 @@ class PortfolioStrategy:
     """
     NAME = 'Default strategy - random sample of securities'
     HOLDING_PERIODS = 1
-    PAUSE_PERIODS = 1
-    REBALANCING_FREQUENCY = 'BM'
+    PAUSE_PERIODS = 0
+    REBALANCING_FREQUENCY = 'M'
     PORTFOLIO_SIZE = 20
 
     def __init__(self, bluevalor_model_output):
@@ -78,7 +79,7 @@ class PortfolioStrategy:
     def rebalancing_days(self):
         result = pd.date_range(self._date_index[0], self._date_index[-1],
                                freq=self.REBALANCING_FREQUENCY)
-        return result[self.PAUSE_PERIODS + 1: -self.HOLDING_PERIODS]
+        return result[self.PAUSE_PERIODS: -self.HOLDING_PERIODS]
 
     @property
     def _date_index(self):
@@ -130,7 +131,8 @@ class Portfolio:
     @property
     def members(self):
         new_index = self.strategy._date_index
-        return self.strategy.positions.reindex(new_index, method='ffill')
+        result = self.strategy.positions.reindex(new_index, method='ffill')
+        return result.shift(1)
 
     @property
     def _static_members(self):
@@ -162,18 +164,21 @@ class PortfolioCharacteristics:
     def __init__(self, benchmark_portfolio):
         self.benchmark = benchmark_portfolio
 
-    def calculate(self, portfolio):
-        return {'mean_return': self._mean_return,
-                'std_deviation': self._std_deviation}
+    def get(self, portfolio):
+        self.portfolio_returns = portfolio.daily_performance()
+        self.benchmark_returns = self.benchmark.daily_performance()
+        self.risk_free = RISK_FREE_RATES['daily']
+        self.mean_yearly_excess_return = self._get_mean_yearly_excess_return()
+        self.mean_yearly_std = self._get_mean_yearly_std()
         # 'alpha', t_stat_alpha = self._calc_alphas()
         # beta = self._calc_betas()
         # sharpe = self._calc_sharpe_ratio()
         # skew = self._calc_skeweness()
 
     @property
-    def _mean_return(self):
-        "values in percent and annualized"
-        result = self.port_ret.mean()
+    def _get_mean_yearly_excess_return(self):
+        "values in percentage and annualized"
+        result = self.portfolio_returns
         annualized = result * 12
         return annualized * 100
 
