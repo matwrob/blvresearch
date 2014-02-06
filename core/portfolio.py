@@ -88,15 +88,20 @@ class PortfolioStrategy:
 class MarketStrategy(PortfolioStrategy):
     "create a market portfolio as a Portfolio based on MarketStrategy"
 
-    NAME = 'Benchmark strategy - hold portfolio of all securities'
-    HOLDING_PERIODS = 0
-    PAUSE_PERIODS = 0
-    RABALANCING_FREQUENCY = 'D'
+    NAME = 'Benchmark strategy - long positions in all securities'
+    HOLDING_PERIODS = 'Constant holding'
+    PAUSE_PERIODS = 'Adjust depending on strategy benchmarked against market'
+    REBALANCING_FREQUENCY = 'No rebalancing'
+    PORTFOLIO_SIZE = 'All securities available'
 
     def _get_positions(self):
         all_entities = list(set(self.output.index.get_level_values(0)))
         result = {day: all_entities for day in self.rebalancing_days}
         return pd.Series(result)
+
+    @property
+    def rebalancing_days(self):
+        return self._date_index
 
 
 class Portfolio:
@@ -150,3 +155,33 @@ class Portfolio:
     @property
     def rebalancing_frequency(self):
         return self.strategy.REBALANCING_FREQUENCY
+
+
+class PortfolioCharacteristics:
+
+    def __init__(self, benchmark_portfolio):
+        self.benchmark = benchmark_portfolio
+
+    def calculate(self, portfolio):
+        return {'mean_return': self._mean_return,
+                'std_deviation': self._std_deviation}
+        # 'alpha', t_stat_alpha = self._calc_alphas()
+        # beta = self._calc_betas()
+        # sharpe = self._calc_sharpe_ratio()
+        # skew = self._calc_skeweness()
+
+    @property
+    def _mean_return(self):
+        "values in percent and annualized"
+        result = self.port_ret.mean()
+        annualized = result * 12
+        return annualized * 100
+
+    @property
+    def _std_deviation(self):
+        result = self.port_ret.std()
+        annualized = result * np.sqrt(12)
+        return annualized * 100
+
+    def _calc_alphas(self):
+        pass
