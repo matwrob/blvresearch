@@ -60,7 +60,7 @@ class PortfolioStrategy:
     NAME = 'PortfolioStrategy'
     HOLDING_PERIODS = 0
     PAUSE_PERIODS = 0
-    REBALANCING_FREQUENCY = 'D'
+    REBALANCING_FREQUENCY = 'B'
     PORTFOLIO_SIZE = 0
 
     def __init__(self, bluevalor_model_output):
@@ -111,7 +111,7 @@ class Portfolio:
 
     @property
     def members(self):
-        new_index = self.strategy._date_index
+        new_index = self._members_returns.daily.index
         result = self.strategy.positions.reindex(new_index, method='ffill')
         return result.shift(1).dropna()
 

@@ -7,25 +7,30 @@ from concat.core.utils import load_object, namespace
 
 class FinPlotter:
 
-    def __init__(self, data, list_of_columns_to_plot=None):
-        self.to_plot = list_of_columns_to_plot
+    def __init__(self, data):
         self.data = data
-        self.plot_type = self._determine_plot_type()
         self.fig, self.ax = plt.subplots()
 
     def plot(self):
         self._initiate_plot()
         self._format_ticks()
         self._format_values()
+        self._set_legend()
         plt.show()
 
+    def _set_legend(self):
+        legend = self.ax.legend(loc='upper center', shadow=True)
+        frame = legend.get_frame()
+        frame.set_facecolor('0.90')
+        for label in legend.get_texts():
+            label.set_fontsize('large')
+        for label in legend.get_lines():
+            label.set_linewidth(1.5)
+
     def _initiate_plot(self):
-        if self.plot_type == 'dataframe':
-            raise NotImplementedError('cannot plot more than a single series')
-        else:
-            dates = self.data.index
-            values = self.data.values
-        self.ax.plot_date(dates, values, '-')
+        dates = self.data.index
+        for c in self.data.columns:
+            self.ax.plot(dates, self.data[c], label=c)
 
     def _format_ticks(self):
         self.ax.xaxis.set_major_locator(self.years)
@@ -38,10 +43,6 @@ class FinPlotter:
         self.ax.fmt_ydata = self.data
         self.ax.grid(True)
         self.fig.autofmt_xdate()
-
-    def _determine_plot_type(self):
-        result = 'dataframe' if self.to_plot else 'series'
-        return result
 
     @property
     def years(self):

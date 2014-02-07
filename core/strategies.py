@@ -4,7 +4,7 @@ import random
 from blvresearch.core.portfolio import PortfolioStrategy
 
 
-class RandomStocksStrategy(PortfolioStrategy):
+class RandomPortfolioStrategy(PortfolioStrategy):
     """take long position in a random set of 20 stocks from the universe
     at each rebalancing day
 
@@ -61,4 +61,24 @@ class Cheapest10Strategy(PortfolioStrategy):
             temp = close.loc[day].dropna()
             temp.sort()
             result[day] = temp.index[:self.PORTFOLIO_SIZE]
+        return pd.Series(result)
+
+
+class Priciest10Strategy(PortfolioStrategy):
+    "implemented only to check regression result of PortfolioCharacteristics"
+
+    NAME = 'Long position in 10 stocks with lowest prices'
+    HOLDING_PERIODS = 1
+    PAUSE_PERIODS = 0
+    REBALANCING_FREQUENCY = 'M'
+    PORTFOLIO_SIZE = 10
+
+    def _get_positions(self):
+        close = self.output.close.unstack(level=0)
+        close = close.resample(self.REBALANCING_FREQUENCY, how='mean')
+        result = dict()
+        for day in self.rebalancing_days:
+            temp = close.loc[day].dropna()
+            temp.sort()
+            result[day] = temp.index[-self.PORTFOLIO_SIZE:]
         return pd.Series(result)
