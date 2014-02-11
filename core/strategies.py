@@ -1,7 +1,8 @@
 import pandas as pd
 import random
 
-from blvresearch.core.portfolio import PortfolioStrategy
+from blvresearch.core.portfolio import PortfolioStrategy, StockReturns
+from concat.core.news import NewsList
 
 
 class RandomPortfolioStrategy(PortfolioStrategy):
@@ -16,13 +17,33 @@ class RandomPortfolioStrategy(PortfolioStrategy):
     PORTFOLIO_SIZE = 20
 
     def _get_positions(self):
-        "overwrite this function to implement your own strategy"
+        "randomly select N stocks from the UNIVERSE"
         all_entities = list(set(self.output.index.get_level_values(0)))
         result = dict()
         for day in self.rebalancing_days:
             random.shuffle(all_entities)
             result[day] = all_entities[:self.PORTFOLIO_SIZE]
         return pd.Series(result)
+
+
+class Random2(RandomPortfolioStrategy):
+
+    PORTFOLIO_SIZE = 2
+
+
+class Random5(RandomPortfolioStrategy):
+
+    PORTFOLIO_SIZE = 5
+
+
+class Random10(RandomPortfolioStrategy):
+
+    PORTFOLIO_SIZE = 10
+
+
+class Random25(RandomPortfolioStrategy):
+
+    PORTFOLIO_SIZE = 25
 
 
 class MarketPortfolioStrategy(PortfolioStrategy):
@@ -44,7 +65,7 @@ class MarketPortfolioStrategy(PortfolioStrategy):
         return self._date_index
 
 
-class Cheapest10Strategy(PortfolioStrategy):
+class Cheap10Strategy(PortfolioStrategy):
     "implemented only to check regression result of PortfolioCharacteristics"
 
     NAME = 'Long position in 10 stocks with lowest prices'
@@ -64,7 +85,7 @@ class Cheapest10Strategy(PortfolioStrategy):
         return pd.Series(result)
 
 
-class Priciest10Strategy(PortfolioStrategy):
+class Pricy10Strategy(PortfolioStrategy):
     "implemented only to check regression result of PortfolioCharacteristics"
 
     NAME = 'Long position in 10 stocks with lowest prices'
@@ -82,3 +103,5 @@ class Priciest10Strategy(PortfolioStrategy):
             temp.sort()
             result[day] = temp.index[-self.PORTFOLIO_SIZE:]
         return pd.Series(result)
+
+

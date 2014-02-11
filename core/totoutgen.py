@@ -12,13 +12,13 @@ SECTORS = ['1100', '1200', '1300', '1400', '2100', '2200', '2300', '2400',
            '3100', '3200', '3250', '3300', '3350', '3400', '3500', '4600',
            '4700', '4800', '4900']
 
+sp500 = pd.read_csv('blvresearch/extras/ticker_rics_sp500_2012.csv')
+# UNI = load_object('dict_of_uni.pickle')
+# PRICES = load_object('price_data_2003_2013_wo_news.pickle')
+# MODEL = load_object('benchmark_model_data_2003_2013_w_news.pickle')
 
-UNI = load_object('dict_of_uni.pickle')
-PRICES = load_object('price_data_2003_2013_wo_news.pickle')
-MODEL = load_object('benchmark_model_data_2003_2013_w_news.pickle')
-
-tog = TotalOutputGenerator(PRICES, MODEL)
-total_output = tog.get()
+# tog = TotalOutputGenerator(PRICES, MODEL)
+# total_output = tog.get()
 
 
 def get_total_output(column, dict_of_yearly_outputs):
@@ -31,10 +31,17 @@ def get_total_output(column, dict_of_yearly_outputs):
     return result
 
 
+class EntityOutputGenerator:
 
+    def __init__(self, list_of_security_ids):
+        self.sec_ids= list_of_security_ids
+
+    def get(self, start_date, end_date):
+        uni = Universe(self.sec_ids)
 
 
 class TotalOutputGenerator:
+
 
     def __init__(self, yearly_price_data, yearly_benchmark_model_data):
         self.pd = yearly_price_data
@@ -136,11 +143,10 @@ def get_df_of_daily_mean_sector_returns(total_output):
     return result
 
 
+# daily = get_df_of_daily_mean_sector_returns(output)
+# weekly = daily.resample("W-SUN", how="sum")
 
-daily = get_df_of_daily_mean_sector_returns(output)
-weekly = daily.resample("W-SUN", how="sum")
-
-news = output["news"].fillna(0)
+# news = output["news"].fillna(0)
 
 
 def add_column_is_relevant(output):

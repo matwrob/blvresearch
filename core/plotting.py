@@ -1,8 +1,5 @@
 from matplotlib.dates import YearLocator, MonthLocator, DateFormatter
 import matplotlib.pyplot as plt
-import pandas as pd
-
-from concat.core.utils import load_object, namespace
 
 
 class FinPlotter:

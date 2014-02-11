@@ -1,10 +1,10 @@
 from itertools import chain
 import pandas as pd
 import numpy as np
-import random
 
 from blvresearch.data.risk_free_rates import RISK_FREE_RATES
 from concat.core.regression import fastols
+
 
 class StockReturns:
     """container for stock returns
@@ -36,6 +36,40 @@ class StockReturns:
         return self.o[self.type].unstack(level=0)
 
 
+class PortfolioDates:
+
+    def __init__(self, date_index, ranking_periods, pause_periods,
+                 holding_periods, rebalancing_frequency):
+        self.date_index = date_index
+        self.ranking_periods = ranking_periods
+        self.pause_periods = pause_periods
+        self.holding_periods = holding_periods
+        self.rebalancing_frequency = rebalancing_frequency
+
+    @property
+    def ranking_days(self):
+        "days when we perform security comparison on certain characteristics"
+        first = self.ranking_periods - 1
+        jump = self.holding_periods
+        last = -jump - self.pause_periods
+        return self._rebalanced_index[first:last:jump]
+
+    @property
+    def rebalancing_days(self):
+        "days when portfolio is reconstructed"
+        temp = list(self._rebalanced_index)
+        positions = [temp.index(d) + self.pause_periods + 1
+                     for d in self.ranking_days]
+        dates = [temp[pos] for pos in positions]
+        return pd.DatetimeIndex(dates)
+
+    @property
+    def _rebalanced_index(self):
+        return pd.date_range(self.date_index[0],
+                             self.date_index[-1],
+                             freq=self.rebalancing_frequency)
+
+
 class PortfolioStrategy:
     """determines a strategy for portfolio formation over time
 
@@ -60,6 +94,7 @@ class PortfolioStrategy:
     NAME = 'PortfolioStrategy'
     HOLDING_PERIODS = 0
     PAUSE_PERIODS = 0
+    RANKING_PERIODS = 0
     REBALANCING_FREQUENCY = 'B'
     PORTFOLIO_SIZE = 0
 
@@ -75,13 +110,19 @@ class PortfolioStrategy:
 
     @property
     def rebalancing_days(self):
-        result = pd.date_range(self._date_index[0], self._date_index[-1],
-                               freq=self.REBALANCING_FREQUENCY)
-        return result[self.PAUSE_PERIODS: -self.HOLDING_PERIODS]
+        return self._portfolio_dates.rebalancing_days
 
     @property
-    def _date_index(self):
-        return self.output.index.get_level_values(1).unique().order()
+    def ranking_days(self):
+        return self._portfolio_dates.ranking_days
+
+    def _portfolio_dates(self):
+        date_index = self.output.index.get_level_values(1).unique().order()
+        return PortfolioDates(date_index,
+                              self.RANKING_PERIODS,
+                              self.PAUSE_PERIODS,
+                              self.HOLDING_PERIODS,
+                              self.REBALANCING_FREQUENCY)
 
 
 class Portfolio:
@@ -102,7 +143,7 @@ class Portfolio:
         returns = self._members_returns.daily
         members = self.members
         result = {k: returns.loc[k][v].mean() for k, v in members.items()}
-        result = pd.Series(result).fillna(0)
+        result = pd.Series(result, name='daily_returns').fillna(0)
         return result
 
     @property
