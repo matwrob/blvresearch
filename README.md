@@ -11,6 +11,7 @@ PORTFOLIO
 General description:
 provides basic objects for data backtesting:
 * StockReturns
+* PortfolioDates
 * PortfolioStrategy
 * Portfolio
 * PortfolioCharacteristics
@@ -54,6 +55,24 @@ rebalancing day is the day when we decide about the construction of our
 portfolio for the next holding period,
 we should hold this portfolio starting at the earliest on the next day
 this is obtained by shifting portfolio.members by 1 position
+
+
+PortfolioDates:
+* determines days when security selection is performed
+* determines days when portfolio construction is changed
+* takes a number of variables on init:
+    0. date_index = set of dates that are only taken into account when
+                    when determining rebalancing days and ranking days
+    1. ranking_periods = number of periods used to calculate certain
+                         characteristics, to determine which securities to
+                         include in portfolio in the nearest future
+    2. pause_periods = number of periods we should wait after determining
+                       the next portfolio structure, before actually holding it
+    3. holding_periods = number of periods we will be holding a given set of
+                         stocks in our portfolio
+    4. date_resampling_frequency = frequency with which initial date index
+                                   should be resampled
+
 
 
 

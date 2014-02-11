@@ -38,36 +38,37 @@ class StockReturns:
 
 class PortfolioDates:
 
-    def __init__(self, date_index, ranking_periods, pause_periods,
-                 holding_periods, rebalancing_frequency):
+    def __init__(self, date_index, rebalancing_frequency,
+                 ranking_periods, pause_periods, holding_periods):
         self.date_index = date_index
+        self.frequency = rebalancing_frequency
+
         self.ranking_periods = ranking_periods
         self.pause_periods = pause_periods
         self.holding_periods = holding_periods
-        self.rebalancing_frequency = rebalancing_frequency
 
     @property
     def ranking_days(self):
         "days when we perform security comparison on certain characteristics"
-        first = self.ranking_periods - 1
+        if self.ranking_periods:
+            first = self.ranking_periods - 1
+        else:
+            first = 0
         jump = self.holding_periods
-        last = -jump - self.pause_periods
-        return self._rebalanced_index[first:last:jump]
+        return self._rebalanced_index[first::jump]
 
     @property
     def rebalancing_days(self):
         "days when portfolio is reconstructed"
-        temp = list(self._rebalanced_index)
-        positions = [temp.index(d) + self.pause_periods + 1
-                     for d in self.ranking_days]
-        dates = [temp[pos] for pos in positions]
-        return pd.DatetimeIndex(dates)
+        first = self.ranking_periods + self.pause_periods
+        jump = self.holding_periods
+        return self._rebalanced_index[first::jump]
 
     @property
     def _rebalanced_index(self):
         return pd.date_range(self.date_index[0],
                              self.date_index[-1],
-                             freq=self.rebalancing_frequency)
+                             freq=self.frequency)
 
 
 class PortfolioStrategy:
@@ -77,7 +78,7 @@ class PortfolioStrategy:
     test should utilize this data
 
     possible to adjust other attributes:
-    * HOLDING_PERIODS
+    * HOLDING_PERIODSs
     * PAUSE_PERIODS
     * REBALANCING_FREQUENCY
     * PORTFOLIO_SIZE
@@ -116,13 +117,15 @@ class PortfolioStrategy:
     def ranking_days(self):
         return self._portfolio_dates.ranking_days
 
+    @property
     def _portfolio_dates(self):
         date_index = self.output.index.get_level_values(1).unique().order()
-        return PortfolioDates(date_index,
-                              self.RANKING_PERIODS,
-                              self.PAUSE_PERIODS,
-                              self.HOLDING_PERIODS,
-                              self.REBALANCING_FREQUENCY)
+        result = PortfolioDates(date_index,
+                                self.REBALANCING_FREQUENCY,
+                                self.RANKING_PERIODS,
+                                self.PAUSE_PERIODS,
+                                self.HOLDING_PERIODS)
+        return result
 
 
 class Portfolio:
