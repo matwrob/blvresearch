@@ -5,10 +5,11 @@ from blvworker.news.important_days import _values_to_scores
 from concat.core.news import NewsList
 
 
-class SimpleMomentum_1W_4W(PortfolioStrategy):
+class SimpleMomentum_1W_1W_4W(PortfolioStrategy):
 
-    HOLDING_PERIODS = 4
+    RANKING_PERIODS = 1
     PAUSE_PERIODS = 1
+    HOLDING_PERIODS = 4
     REBALANCING_FREQUENCY = 'W'
     PORTFOLIO_SIZE = 30
 
@@ -22,7 +23,7 @@ class SimpleMomentum_1W_4W(PortfolioStrategy):
         return pd.Series(result)
 
 
-class RelevantNewsMomentum_1W_4W(SimpleMomentum_1W_4W):
+class RelevantNewsMomentum_1W_4W(SimpleMomentum_1W_1W_4W):
 
     def _get_positions(self):
         returns = StockReturns(self.output).weekly
@@ -74,7 +75,7 @@ class HeadlineNewsMomentum_1W_4W(RelevantNewsMomentum_1W_4W):
         return result.unstack(level=0)
 
 
-class ImportantNewsMomentum_1W_4W(SimpleMomentum_1W_4W):
+class ImportantNewsMomentum_1W_4W(SimpleMomentum_1W_1W_4W):
 
     def _filter_function(self, dataframe):
         return self._filter_away_unimportant_days(dataframe)

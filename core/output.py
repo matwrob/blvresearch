@@ -1,6 +1,5 @@
 import pandas as pd
 
-
 from concat.core.benchmark_model import BenchmarkModelData
 from concat.core.universegen import build_universe, db
 from concat.core.universe import SecurityUniverse

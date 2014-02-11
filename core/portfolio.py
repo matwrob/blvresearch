@@ -38,10 +38,10 @@ class StockReturns:
 
 class PortfolioDates:
 
-    def __init__(self, date_index, rebalancing_frequency,
+    def __init__(self, date_index, data_frequency,
                  ranking_periods, pause_periods, holding_periods):
         self.date_index = date_index
-        self.frequency = rebalancing_frequency
+        self.frequency = data_frequency
 
         self.ranking_periods = ranking_periods
         self.pause_periods = pause_periods
@@ -50,25 +50,40 @@ class PortfolioDates:
     @property
     def ranking_days(self):
         "days when we perform security comparison on certain characteristics"
-        if self.ranking_periods:
-            first = self.ranking_periods - 1
-        else:
-            first = 0
+        first = self._get_first_ranking_day_position()
+        if first == -1:
+            return list()
         jump = self.holding_periods
-        return self._rebalanced_index[first::jump]
+        last_possible = -(self.pause_periods + 1)
+        return self._rebalanced_index[first:last_possible:jump]
+
+    def _get_first_ranking_day_position(self):
+        if self.ranking_periods:
+            return self.ranking_periods - 1
+        return -1
+
+    def _get_first_rebalancing_day_position(self):
+        first_ranking = self._get_first_ranking_day_position()
+        return first_ranking + self.pause_periods
 
     @property
     def rebalancing_days(self):
         "days when portfolio is reconstructed"
-        first = self.ranking_periods + self.pause_periods
+        first = self._get_first_rebalancing_day_position()
         jump = self.holding_periods
-        return self._rebalanced_index[first::jump]
+        last_possible = -1
+        if first == -1:
+            temp = self._insert_dummy_start(self._rebalanced_index)
+            return temp[:last_possible:jump]
+        return self._rebalanced_index[first:last_possible:jump]
+
+    def _insert_dummy_start(self, index):
+        return index.insert(0, index[0] - 1)
 
     @property
     def _rebalanced_index(self):
-        return pd.date_range(self.date_index[0],
-                             self.date_index[-1],
-                             freq=self.frequency)
+        temp = pd.Series(index=self.date_index)
+        return temp.resample(self.frequency).index
 
 
 class PortfolioStrategy:
@@ -95,7 +110,7 @@ class PortfolioStrategy:
     NAME = 'PortfolioStrategy'
     HOLDING_PERIODS = 0
     PAUSE_PERIODS = 0
-    RANKING_PERIODS = 0
+    RANKING_PERIODS = 1
     REBALANCING_FREQUENCY = 'B'
     PORTFOLIO_SIZE = 0
 
