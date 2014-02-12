@@ -15,7 +15,7 @@ from blvresearch.core.utils import int2datetime
 
 
 def get_incl_and_excl_dates_for_SP500():
-    temp = pd.read_csv('blvresearch/extras/ticker_rics_sp500_2012.csv')
+    temp = pd.read_csv('ticker_rics_sp500_2012.csv')
     temp = temp[['start', 'ending', 'TICKER']]
     temp['index'] = temp['TICKER'].map(tick_to_ent_no_dupli)
     temp = temp.dropna()
