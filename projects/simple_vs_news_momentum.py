@@ -1,8 +1,22 @@
+"""
+Concat: news from Friday evening (Saturday/Sunday) are assigned to Monday
+any non-trading day news is assigned to the next trading day
+
+This implies for TR Sentiment Data to discard 'date' column (which gives
+dates of publication) and use only 'tdate' column (which gives the next
+trading day)
+
+"""
+
 import pandas as pd
 
 from blvresearch.core.portfolio import PortfolioStrategy, StockReturns
+from blvresearch.core.frame_of_sentiments import SENTIMENT_DF
 from blvworker.news.important_days import _values_to_scores
 from concat.core.news import NewsList
+
+
+df_of_sentiments =
 
 
 class SimpleMomentum_1W_1W_4W(PortfolioStrategy):
