@@ -5,7 +5,7 @@ from blvworker.news.news_data import (
 )
 
 
-PATH_TO_CSV = 'blvresearch/extras/ticker_rics_sp500_2012.csv'
+PATH_TO_CSV = 'ticker_rics_sp500_2012.csv'
 sp500 = pd.read_csv(PATH_TO_CSV)
 
 
@@ -84,15 +84,3 @@ TICKER
 NWS       001KWY-E
 NWSA      001KWY-E
 """
-
-ent_to_tick = {
-    '0012LR-E': ['AGL', 'GAS'],
-    '06BZ3S-E': ['VIA', 'VIAB'],
-    '000V2H-E': ['PHA', 'PHM'],
-    '000HZ5-E': ['EA', 'ERTS'],
-    '000LH0-E': ['JOY', 'JOYG'],
-    '05LL2F-E': ['CMCSA', 'CMCSK'],
-    '000KQ5-E': ['FPL', 'NEE'],
-    '000YWC-E': ['WFM', 'WFMI'],
-    '001KWY-E': ['NWS', 'NWSA']
-}

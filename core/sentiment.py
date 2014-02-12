@@ -5,7 +5,7 @@ from blvresearch.core.sp500 import tick_to_ent_no_dupli
 from blvresearch.core.utils import UniverseByEntityIdGenerator
 
 
-PATH_TO_CSV = 'blvresearch/extras/sp500news_cald.csv'
+PATH_TO_CSV = 'sp500news_cald.csv'
 
 sentiment = pd.read_csv(PATH_TO_CSV)
 sentiment = sentiment.drop(['date', 'sent_w', 'count', 'countrtrs'], axis=1)
