@@ -57,7 +57,9 @@ we should hold this portfolio starting at the earliest on the next day
 this is obtained by shifting portfolio.members by 1 position
 
 
+################
 PortfolioDates:
+################
 * determines days when security selection is performed
 * determines days when portfolio construction is changed
 * takes a number of variables on init:
@@ -302,22 +304,67 @@ CASES: (used in testing as well)
    09.01.2013
 
 
-PERIODIC BACKTEST:
+################
+STATIC STRATEGY
+################
+StaticStrategy is a PortfolioStrategy where Portfolio changes
+only at specific points in time determined by the following strategy
+attributes:
+* ranking periods = number of periods used to compare certaing
+                    characteristics of stocks
+* pause periods = number of periods to wait after determining the portfolio
+                  for the next holding period before actually holding it
+* holding periods = number of periods to hold a given portfolio before next
+                    rebalancing
+* rebalancing frequency = frequency of periods used, influences the meaning
+                          of all the above three attributes
 
-performs backtesting procedure based on total output data provided and optional
-list of entities
+StaticStrategy based on the above attributes determines:
+* ranking days: days when we perform analysis of stock attributes to check
+                which stocks will form our portfolio at the next
+                rebalancing day
+* rebalancing days: days when portfolio is changed (by assumption we change
+                    portfolio structure on the evening of the day before
+                    the first trading day when this portfolio is going to
+                    be active)
+* positions: most important, as for PortfolioStrategy
+
+Portfolio size can also bounded by default.
+
+
+##############
+STOCK RETURNS
+##############
 
 Stock returns are contained in a class StockReturns, which takes total output
 and optional return type (by default absolute return is used).
 Initialized StockReturns give access to .monthly, .weekly, and .daily returns.
 
 
+#########
+BACKTEST
+#########
+
 Any kind of backtest class should perform only "overview" type of operations
 using Portfolio/PortfolioStrategy objects
 
 
+#################
+DYNAMIC STRATEGY
+#################
+DynamicStrategy is a PortfolioStrategy where Portfolio can be adjusted
+at every point in time (depending on specified frequency) according to a
+specified methodology.
 
+DynamicStrategy checks at every periods end for every stock if it matches
+specified requirements, and if so, it adds this stock to a portfolio
+(possible pause period before actually adding the stock can also be
+specified) and holds it for a specified amount of holding periods
+
+
+##########
 PLOTTING:
+##########
 
 provides infrastructure to create plots of data coming from testing Bluevalor's
 data

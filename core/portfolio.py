@@ -7,147 +7,64 @@ from concat.core.regression import fastols
 
 
 class StockReturns:
-    """container for stock returns
-    provide Bluevalor Model data output and type of return on init
-    types: 'abs_ret'   (default, total returns, Factset methodology)
-           'rel_ret'   (returns relative to Blv benchmarks)
-           'alpha'     (risk adjusted returns relative to Blv benchmarks)
 
-    """
-
-    def __init__(self, total_output, type_of_return='abs_ret'):
-        self.o = total_output
-        self.type = type_of_return
+    def __init__(self, df_of_returns):
+        self._all_returns = df_of_returns
 
     @property
     def monthly(self):
-        return self._unstacked.resample('M', how='sum')
+        return self._all_returns.resample('M', how='sum')
 
     @property
     def weekly(self):
-        return self._unstacked.resample('W', how='sum')
+        return self._all_returns.resample('W', how='sum')
 
     @property
     def daily(self):
-        return self._unstacked
-
-    @property
-    def _unstacked(self):
-        return self.o[self.type].unstack(level=0)
+        return self._all_returns
 
 
 class PortfolioDates:
 
-    def __init__(self, date_index, data_frequency,
-                 ranking_periods, pause_periods, holding_periods):
-        self.date_index = date_index
-        self.frequency = data_frequency
-
-        self.ranking_periods = ranking_periods
-        self.pause_periods = pause_periods
-        self.holding_periods = holding_periods
+    def __init__(self, date_index, main_frequency,
+                 rebalancing_periods, ranking_periods, pause_periods,
+                 holding_periods):
+        self.index = date_index
+        self.main_freq = main_frequency
+        self.reb_per = rebalancing_periods
+        self.rank_per = ranking_periods
+        self.pause_per = pause_periods
+        self.hold_per = holding_periods
 
     @property
     def ranking_days(self):
-        "days when we perform security comparison on certain characteristics"
-        first = self._get_first_ranking_day_position()
-        if first == -1:
+        start = self.rank_per - 1 if self.rank_per else -1
+        end = -self.pause_per - 1
+        if start == -1:
             return list()
-        jump = self.holding_periods
-        last_possible = -(self.pause_periods + 1)
-        return self._rebalanced_index[first:last_possible:jump]
-
-    def _get_first_ranking_day_position(self):
-        if self.ranking_periods:
-            return self.ranking_periods - 1
-        return -1
-
-    def _get_first_rebalancing_day_position(self):
-        first_ranking = self._get_first_ranking_day_position()
-        return first_ranking + self.pause_periods
+        return self._rebalanced_index[start:end]
 
     @property
     def rebalancing_days(self):
-        "days when portfolio is reconstructed"
-        first = self._get_first_rebalancing_day_position()
-        jump = self.holding_periods
-        last_possible = -1
-        if first == -1:
-            temp = self._insert_dummy_start(self._rebalanced_index)
-            return temp[:last_possible:jump]
-        return self._rebalanced_index[first:last_possible:jump]
-
-    def _insert_dummy_start(self, index):
-        return index.insert(0, index[0] - 1)
+        start = self.rank_per + self.pause_per - 1
+        end = -1
+        if start == -1:
+            ind = self._rebalanced_index
+            temp = ind.insert(0, ind[0] - 1)
+            return temp[:end]
+        return self._rebalanced_index[start:end]
 
     @property
     def _rebalanced_index(self):
-        temp = pd.Series(index=self.date_index)
-        return temp.resample(self.frequency).index
-
-
-class PortfolioStrategy:
-    """determines a strategy for portfolio formation over time
-
-    takes Bluevalor Model data output on init since any strategy one wants to
-    test should utilize this data
-
-    possible to adjust other attributes:
-    * HOLDING_PERIODSs
-    * PAUSE_PERIODS
-    * REBALANCING_FREQUENCY
-    * PORTFOLIO_SIZE
-
-    create your own strategy that inherits from PortfolioStrategy, overwrite
-    _get_positions function with your methodology, adjust other global
-    attributes according to your needs
-
-    _get_positions must return a time series of lists of entities where index
-    is given by .rebalancing_days
-
-    """
-
-    NAME = 'PortfolioStrategy'
-    HOLDING_PERIODS = 0
-    PAUSE_PERIODS = 0
-    RANKING_PERIODS = 1
-    REBALANCING_FREQUENCY = 'B'
-    PORTFOLIO_SIZE = 0
-
-    def __init__(self, bluevalor_model_output):
-        self.output = bluevalor_model_output
-        self.positions = self._get_positions()
-
-    def __repr__(self):
-        return self.NAME
-
-    def _get_positions(self):
-        raise NotImplementedError
-
-    @property
-    def rebalancing_days(self):
-        return self._portfolio_dates.rebalancing_days
-
-    @property
-    def ranking_days(self):
-        return self._portfolio_dates.ranking_days
-
-    @property
-    def _portfolio_dates(self):
-        date_index = self.output.index.get_level_values(1).unique().order()
-        result = PortfolioDates(date_index,
-                                self.REBALANCING_FREQUENCY,
-                                self.RANKING_PERIODS,
-                                self.PAUSE_PERIODS,
-                                self.HOLDING_PERIODS)
-        return result
+        temp = pd.Series(index=self.index)
+        return temp.resample(self.main_freq).index
 
 
 class Portfolio:
-    """represents the evolution of a portfolio of stocks over time
-    on init takes portfolio_strategy:
+    """represents the portfolio of stocks over time; on init takes
+    PortfolioStrategy:
 
-    .members          to see time series of entities sets on a daily basis
+    .members          to see time series of entities' sets on a daily basis
     .performance      to see time series of returns
 
     feed PortfolioCharacteristics class with Portfolio instance to obtain
@@ -159,28 +76,35 @@ class Portfolio:
 
     def daily_performance(self, how='mean'):
         returns = self._members_returns.daily
-        members = self.members
-        result = {k: returns.loc[k][v].mean() for k, v in members.items()}
-        result = pd.Series(result, name='daily_returns').fillna(0)
-        return result
-
-    @property
-    def _members_returns(self):
-        return StockReturns(self._output_data.ix[self._static_members])
+        result = dict()
+        for k, v in self.members.items():
+            if type(v) == list:
+                result[k] = returns.loc[k][v].mean()
+            else:
+                result[k] = 0
+        return pd.Series(result, name='daily_returns')
 
     @property
     def members(self):
-        new_index = self._members_returns.daily.index
-        result = self.strategy.positions.reindex(new_index, method='ffill')
-        return result.shift(1).dropna()
+        return self.strategy.positions
 
     @property
     def _static_members(self):
-        return list(set(chain.from_iterable(self.strategy.positions)))
+        positions = self.strategy.positions.dropna()
+        return list(set(chain.from_iterable(positions)))
+
+    @property
+    def _members_returns(self):
+        returns = self.strategy.returns[self._static_members]
+        return StockReturns(returns)
 
     @property
     def _output_data(self):
         return self.strategy.output
+
+    @property
+    def ranking_periods(self):
+        return self.strategy.RANKING_PERIODS
 
     @property
     def holding_periods(self):

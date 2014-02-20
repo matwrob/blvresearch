@@ -1,4 +1,5 @@
 from matplotlib.dates import YearLocator, MonthLocator, DateFormatter
+from matplotlib.font_manager import FontProperties
 import matplotlib.pyplot as plt
 
 
@@ -16,7 +17,9 @@ class FinPlotter:
         plt.show()
 
     def _set_legend(self):
-        legend = self.ax.legend(loc='upper center', shadow=True)
+        fontP = FontProperties()
+        fontP.set_size('small')
+        legend = self.ax.legend(loc='upper left', shadow=True, prop=fontP)
         frame = legend.get_frame()
         frame.set_facecolor('0.90')
         for label in legend.get_texts():
