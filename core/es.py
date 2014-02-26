@@ -1,9 +1,8 @@
+from itertools import chain
 import pandas as pd
 import numpy as np
-from itertools import chain
 
 from concat.core.utils import load_object
-
 # from blvresearch.core.utils import get_universe_by_entity_id, start, end
 # from blvresearch.core.SP500output import ENTITIES_SP560
 # from concat.core.benchmark_model import BenchmarkModelData
@@ -12,42 +11,32 @@ from concat.core.utils import load_object
 # DATA = {k: BenchmarkModelData(v, start(k), end(k),
 #                               in_currency='USD', news=True)
 #         for k, v in UNI.items()}
-RESEARCH_YEARS = [2011, 2012, 2013]
 UNI = load_object('uni_sp500_2011_2013.pickle')
 DATA = load_object('bmd_sp500_2011_2013.pickle')
 
 
-def find_events(list_of_entities, entity_event_generator):  # pragma: no cover
-    result = dict()
-    for entity_id in list_of_entities:
-        eeg = EntityEventGenerator(entity_id)
-        result[entity_id] = eeg.generate()
-    return result
+class EventDetector:
 
+    def __init__(self, event_class):
+        self.event = event_class
 
-class EntityEventGenerator:  # pragma: no cover
-
-    def __init__(self, entity_id):
-        self.entity_id = entity_id
-
-    def generate(self):
-        dates = self._find_dates(self.data)
-        result = [Event(self.entity_id, date) for date in dates]
-        return EventList(result)
-
-    @property
-    def data(self):
-        return pd.concat([DATA[y][self.entity_id] for y in RESEARCH_YEARS])
-
-    def _find_dates(self, data):
-        raise NotImplementedError
+    def run(self, entity_id, entity_data):
+        eel = EventList()
+        for d in entity_data.index:
+            e = self.event(entity_id, d, eel)
+            if e.triggers():
+                eel.append_event(e)
+        return eel
 
 
 class Event:
 
-    def __init__(self, entity_id, date):
+    DISTANCE_THRESH = 4
+
+    def __init__(self, entity_id, date, event_list):
         self.entity_id = entity_id
         self.date = date
+        self.distance_to_last = self._find_distance(event_list)
 
     def __str__(self):
         return 'Event for "%s" on %s' % (self.entity_id,
@@ -56,69 +45,54 @@ class Event:
     def __repr__(self):
         return str(self)
 
+    def triggers(self):
+        raise NotImplementedError
+
     @property
     def meta_data(self):
         return UNI[self.date.year][self.entity_id]
 
     @property
-    def price_data(self):
-        data = pd.concat([DATA[y][self.entity_id] for y in RESEARCH_YEARS])
-        return EventPriceData(data, self.date)
+    def concat_data(self):
+        return EventConcatData(self)
+
+    def _find_distance(self, event_list):
+        if len(event_list) > 0:
+            prev = len(event_list) - 1
+            return (self.date - event_list[prev].date).days
+        return np.nan
 
 
-class EventPriceData:
+class EventConcatData:
 
-    def __init__(self, data, date):
-        self._data = data
-        self._date = date
+    def __init__(self, event):
+        self._data = DATA[event.date.year][event.entity_id]
+        self._date = event.date
+
+    def series_after(self, attribute, lag=1, length=5):
+        start = self._position + lag
+        end = start + length
+        if end > len(self._data[attribute]):
+            raise ValueError('Date outside total date scope')
+        return self._data[attribute][start:end]
+
+    def series_before(self, attribute, lag=1, length=5):
+        end = self._position - lag + 1
+        start = end - length
+        if start < 0:
+            raise ValueError('Date outside total date scope')
+        return self._data[attribute][start:end]
 
     @property
     def _position(self):
         "gives event day position in data index"
         return self._data.index.get_loc(self._date)
 
-    def abs_ret(self, lag=0):
-        self._validate_date(lag)
-        return self._data['abs_ret'][self._position + lag]
-
-    def alpha(self, lag=0):
-        self._validate_date(lag)
-        return self._data['alpha'][self._position + lag]
-
-    def rel_ret(self, lag=0):
-        self._validate_date(lag)
-        return self._data['rel_ret'][self._position + lag]
-
-    def bench(self, lag=0):
-        self._validate_date(lag)
-        return self._data['bench'][self._position + lag]
-
-    def beta(self, lag=0):
-        self._validate_date(lag)
-        return self._data['beta'][self._position + lag]
-
-    def r2(self, lag=0):
-        self._validate_date(lag)
-        return self._data['r2'][self._position + lag]
-
-    def series(self, attribute, lag=5):
-        self._validate_date(lag)
-        start, end = self._get_intervals_start_end(lag)
-        return self._data[attribute][start:end]
-
-    def _get_intervals_start_end(self, lag):
-        s = self._position + 1 if lag > 0 else self._position
-        return min(s, s + lag), max(s, s + lag)
-
-    def _validate_date(self, lag):
-        if self._position + lag < 0:
-            raise ValueError('Date lag outside total date scope')
-
 
 class EventList:
 
-    def __init__(self, list_of_events):
-        self._events = list_of_events
+    def __init__(self):
+        self._events = list()
 
     def __str__(self):
         return 'EventList with %s events' % len(self)
@@ -140,35 +114,28 @@ class EventList:
     def __len__(self):
         return len(self._events)
 
-    def filter(self, attribute, value):
-        if attribute in ['blvindustry', 'country', 'exchange', 'geounit',
-                         'industry', 'sector', 'zone']:
-            tmp = [e for e in self if getattr(e.meta_data, attribute) == value]
-            return EventList(tmp)
-        raise AttributeError
+    def append_event(self, event):
+        self._events.append(event)
 
-    def split_by_date(self):
-        result = {event.date: [] for event in self._events}
-        [result[event.date].append(event) for event in self._events]
-        return {k: EventList(v) for k, v in result.items()}
+    def extend(self, event_list):
+        e = event_list[0]
+        e.distance_to_last = (e.date - self.last.date).days
+        self._events.extend(event_list._events)
 
-    def split_by_entity(self):
-        result = {event.entity_id: [] for event in self._events}
-        [result[event.entity_id].append(event) for event in self._events]
-        return {k: EventList(v) for k, v in result.items()}
+    @property
+    def last(self):
+        return self._events[len(self._events) - 1]
 
-    def _to_series_of_event_lists(self):
-        return pd.Series(data=self.split_by_date(),
-                         index=self._date_index,
-                         name='event_lists')
+    def to_series(self):
+        result = pd.Series({e.date: e for e in self})
+        result.reindex(self._date_index)
+        return result
 
-    def _to_dataframe_of_events(self):
-        by_entity = self.split_by_entity()
-        data = {k: pd.Series(data={event.date: event for event in v},
-                             index=self._date_index)
-                for k, v in by_entity.items()}
-        return pd.DataFrame(data=data,
-                            index=self._date_index)
+    @classmethod
+    def from_dict(cls, dict_of_event_lists):
+        iterable = [d.values._events for d in dict_of_event_lists]
+        events = chain.from_iterable(iterable)
+        return EventList(list(events))
 
     @property
     def _date_index(self):
@@ -176,15 +143,20 @@ class EventList:
         start, end = min(all_dates), max(all_dates)
         return pd.date_range(start, end, freq='B')
 
-    @classmethod
-    def _from_list_of_lists(cls, list_of_lists):
-        tmp = chain.from_iterable(list_of_lists)
-        return cls(list(tmp))
+    def remove_event(self, index):
+        del self._events[index]
+        # reset distances
+        if len(self._events) > 1:
+            self._reset_close_distances(index)
+        if len(self._events) == 1:
+            self._events[0].distance_to_last = np.nan
 
-    @classmethod
-    def _from_dict(cls, dict_of_lists):
-        tmp = chain.from_iterable(dict_of_lists.values())
-        return cls(list(tmp))
+    def _reset_close_distances(self, index):
+        if index == 0:
+            self._events[index].distance_to_last = np.nan
+        else:
+            prev, this = self._events[index - 1], self._events[index]
+            this.distance_to_last = (this.date - prev.date).days
 
 
 class EventStatistics:

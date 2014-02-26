@@ -1,20 +1,23 @@
-from blvworker.news.important_days import _values_to_scores
-from concat.core.universe import Universe
-from concat.core.benchmark_model import BenchmarkModelData
+from blvworker.news.important_days import _get_mean_and_sigma
 from concat.core.news import NewsList
-from blvresearch.core.es import EventGenerator
+from blvresearch.core.es import Event
 
 
-u = Universe(['R85KLC-S-US'])
-start = '2013-01-01'
-end = '2013-12-31'
-DATA = BenchmarkModelData(u, start, end, in_currency='USD', news=True)
+class BusyNewsDay(Event):
 
-
-class BusyNewsDaysEvents(EventGenerator):
-
-    def _find_dates(self, data):
-        news = data['news']
-        news_len = news.map(lambda x: len(x) if isinstance(x, NewsList) else 0)
-        scores = _values_to_scores(news_len)
-        return list(scores[scores == 2].index)
+    @property
+    def triggers(self):
+        def func(x):
+            if not isinstance(x, NewsList):
+                return 0
+            return len(x)
+        if self.distance_to_last < self.DISTANCE_THRESH:
+            return False
+        news = self.concat_data._data['news']
+        news_len = news.map(func)
+        mean, sigma = _get_mean_and_sigma(news_len)
+        this_value = self.concat_data.series_after('news', lag=0, length=1)
+        this_value = func(this_value)
+        if this_value > mean + 2 * sigma:
+            return True
+        return False
