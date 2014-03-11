@@ -3,23 +3,12 @@ import numpy as np
 import scipy.stats as stats
 
 from blvworker.news.important_days import _get_mean_and_sigma
-from blvresearch.core.es import Event
+from blvresearch.core.event_study import Event, CloseEvents
 from concat.core.news import NewsList
 
 
-def mean_test(event_list, attribute, length):
-    series = [e.concat_data.series_after(attribute, lag=2, length=length)
-              for e in event_list]
-    returns = [s.sum() for s in series]
-    print('Mean:', np.mean(returns))
-    # t-test
-    # null hypothesis: expected value = 0
-    t_statistic, p_value = stats.ttest_1samp(returns, 0)
-    print('p_value:', p_value)
-
-
 class NewsEvent(Event):
-    DISTANCE_THRESH = 30
+    DISTANCE_THRESH = 20
 
     @property
     def _event_day_alpha(self):
@@ -67,21 +56,6 @@ class NewsEvent(Event):
         return len(news_list)
 
 
-def plot_histogram_of_alphas(event_list):
-    attribute, length = 'alpha', 20
-    series = [e.concat_data.series_after(attribute, lag=2, length=length)
-              for e in event_list]
-    returns = [s.sum() for s in series]
-    plt.hist(returns, bins=50, normed=True, alpha=0.6, color='g')
-    xmin, xmax = plt.xlim()
-    x = np.linspace(xmin, xmax, 100)
-    mu, std = stats.norm.fit(returns)
-    p = stats.norm.pdf(x, mu, std)
-    plt.plot(x, p, 'k', linewidth=2)
-    title = "Fit results: mu = %.2f,  std = %.2f" % (mu, std)
-    plt.title(title)
-
-
 class ManyNewsAlphaGreaterThan2pct(NewsEvent):
     def triggers(self):
         if self.distance_to_last < self.DISTANCE_THRESH:
@@ -91,12 +65,23 @@ class ManyNewsAlphaGreaterThan2pct(NewsEvent):
         return False
 
 
+class ManyNewsAbsoluteAlphaGreaterThan2pctWithoutLookback(NewsEvent):
+    def triggers(self):
+        if self._has_many_news() and self._absolute_alpha_greater_than_2pct():
+            return True
+        return False
+
+
 class ManyNewsAlphaSmallerThanMinus2pct(NewsEvent):
     def triggers(self):
-        if self.distance_to_last < self.DISTANCE_THRESH:
-            return False
         if self._has_many_news() and self._alpha_smaller_than_minus_2pct():
-            return True
+            ce = CloseEvents(self)
+            events = ce.find_before(
+                ManyNewsAbsoluteAlphaGreaterThan2pctWithoutLookback,
+                self.DISTANCE_THRESH
+            )
+            if not events:
+                return True
         return False
 
 
@@ -125,3 +110,29 @@ class NoNewsAlphaSmallerThanMinus4pct(NewsEvent):
         if self._has_no_news() and self._alpha_smaller_than_minus_4pct():
             return True
         return False
+
+
+def mean_test(event_list, attribute, length):
+    series = [e.concat_data.series_after(attribute, lag=2, length=length)
+              for e in event_list]
+    returns = [s.sum() for s in series]
+    print('Mean:', np.mean(returns))
+    # t-test
+    # null hypothesis: expected value = 0
+    t_statistic, p_value = stats.ttest_1samp(returns, 0)
+    print('p_value:', p_value)
+
+
+def plot_histogram_of_alphas(event_list):
+    attribute, length = 'alpha', 20
+    series = [e.concat_data.series_after(attribute, lag=2, length=length)
+              for e in event_list]
+    returns = [s.sum() for s in series]
+    plt.hist(returns, bins=50, normed=True, alpha=0.6, color='g')
+    xmin, xmax = plt.xlim()
+    x = np.linspace(xmin, xmax, 100)
+    mu, std = stats.norm.fit(returns)
+    p = stats.norm.pdf(x, mu, std)
+    plt.plot(x, p, 'k', linewidth=2)
+    title = "Fit results: mu = %.2f,  std = %.2f" % (mu, std)
+    plt.title(title)

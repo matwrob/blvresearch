@@ -7,12 +7,19 @@ class EventDetector:
         self.event = event_class
 
     def run(self, entity_id, entity_data, entity_meta):
-        eel = EventList()
+        el = self._create_initial_list(entity_id, entity_data, entity_meta)
+        result = EventList()
+        for event in el:
+            if event.triggers():
+                result.append_event(event)
+        return result
+
+    def _create_initial_list(self, entity_id, entity_data, entity_meta):
+        el = EventList()
         for d in entity_data.index:
-            e = self.event(entity_id, entity_data, entity_meta, d, eel)
-            if e.triggers():
-                eel.append_event(e)
-        return eel
+            e = self.event(entity_id, entity_data, entity_meta, d, el)
+            el.append_event(e)
+        return el
 
 
 class Event:
@@ -42,23 +49,27 @@ class Event:
         return EventConcatData(self)
 
 
-def find_events_after(event, neighbour_class, distance_thrsh):
-    all_after = [e for e in event._list if e.date > event.date
-                 and (e.date - event.date).days < distance_thrsh]
-    new = [neighbour_class(e.entity_id, e._data, e.meta_data, e.date, e._list)
-           for e in all_after]
-    matching = [e for e in new if e.triggers()]
-    return matching
+class CloseEvents:
 
+    def __init__(self, event):
+        self.ev = event
 
-def find_events_before(event, neighbour_class, distance_thrsh):
-    """distance_thrsh is checked using calendar days"""
-    all_before = [e for e in event._list if e.date < event.date
-                  and (event.date - e.date).days < distance_thrsh]
-    new = [neighbour_class(e.entity_id, e._data, e.meta_data, e.date, e._list)
-           for e in all_before]
-    matching = [e for e in new if e.triggers()]
-    return matching
+    def find_after(self, neighbour_class, days):
+        last_day = self.ev.date + pd.tseries.offsets.BDay(days)
+        tmp = [e for e in self.ev._list if self.ev.date < e.date <= last_day]
+        result = self._matching_events(tmp, neighbour_class)
+        return result
+
+    def find_before(self, neighbour_class, days):
+        first_day = self.ev.date - pd.tseries.offsets.BDay(days)
+        tmp = [e for e in self.ev._list if first_day <= e.date < self.ev.date]
+        result = self._matching_events(tmp, neighbour_class)
+        return result
+
+    def _matching_events(self, list_of_events, ncls):
+        result = [ncls(e.entity_id, e._data, e.meta_data, e.date, e._list)
+                  for e in list_of_events]
+        return [e for e in result if e.triggers()]
 
 
 class EventConcatData:

@@ -1,10 +1,24 @@
 import pandas as pd
 import unittest
 
-from blvresearch.core.event_study import Event, EventConcatData, EventList
+from blvresearch.core.event_study import (
+    Event, EventConcatData, EventList, CloseEvents, EventDetector
+)
 from concat.core.utils import load_object
 
 PRICE_DATA, META_DATA = load_object('blvresearch/tests/mock_data.pickle')
+
+
+class MockEvent1(Event):
+    def triggers(self):
+        if self.concat_data.series_after('alpha', lag=0, length=1) > 0:
+            return True
+
+
+class MockEvent2(Event):
+    def triggers(self):
+        if self.concat_data.series_after('alpha', lag=0, length=1) < 0:
+            return True
 
 
 class TestEvent(unittest.TestCase):
@@ -378,3 +392,52 @@ class TestEventList(unittest.TestCase):
 
         expected = pd.date_range('2012-10-26', '2012-11-30', freq='B')
         pd.np.testing.assert_array_equal(result.index, expected)
+
+
+class TestCloseEvents(unittest.TestCase):
+
+    EL = EventList()
+    for d in PRICE_DATA.index:
+        EL.append_event(Event('000C7F-E', PRICE_DATA, META_DATA, d, EL))
+    by_date = EL.split_by_date()
+    event = by_date[pd.datetime(2012, 10, 31)][0]
+    CE = CloseEvents(event)
+
+    def test_events_before(self):
+        expected = ['2012-10-22', '2012-10-24']
+        result = [e.date.strftime('%Y-%m-%d')
+                  for e in self.CE.find_before(MockEvent1, days=10)]
+        self.assertEqual(set(result), set(expected))
+
+        expected = ['2012-10-17', '2012-10-18', '2012-10-19', '2012-10-23',
+                    '2012-10-25', '2012-10-26']
+        result = [e.date.strftime('%Y-%m-%d')
+                  for e in self.CE.find_before(MockEvent2, days=10)]
+        self.assertEqual(set(result), set(expected))
+
+    def test_events_after(self):
+        expected = ['2012-11-05', '2012-11-09', '2012-11-13']
+        result = [e.date.strftime('%Y-%m-%d')
+                  for e in self.CE.find_after(MockEvent1, days=10)]
+        self.assertEqual(set(result), set(expected))
+
+        expected = ['2012-11-01', '2012-11-02', '2012-11-06', '2012-11-07',
+                    '2012-11-08', '2012-11-12', '2012-11-14']
+        result = [e.date.strftime('%Y-%m-%d')
+                  for e in self.CE.find_after(MockEvent2, days=10)]
+        self.assertEqual(set(result), set(expected))
+
+
+class TestEventDetector(unittest.TestCase):
+
+    D = EventDetector(MockEvent1)
+
+    def test_create_initial_list(self):
+        result = self.D._create_initial_list('000C7F-E', PRICE_DATA, META_DATA)
+        self.assertIsInstance(result, EventList)
+        self.assertEqual(len(result), 754)
+
+    def test_run(self):
+        result = self.D.run('000C7F-E', PRICE_DATA, META_DATA)
+        self.assertIsInstance(result, EventList)
+        self.assertEqual(len(result), 378)
