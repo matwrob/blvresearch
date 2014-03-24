@@ -2,6 +2,7 @@ import pandas as pd
 import math
 
 from blvresearch.core.event_study import Event
+# from memnews import NewsList
 from concat.core.news import NewsList
 
 
@@ -64,17 +65,19 @@ class NewsEvent(Event):
         return self._event_day_news_amount < mean
 
     def _get_alpha_moments(self):
-        year = self.date.year
-        start, end = pd.datetime(year, 1, 1), pd.datetime(year, 12, 31)
-        val = self.concat_data._data['alpha'][start:end]
+        # year = self.date.year
+        # start, end = pd.datetime(year, 1, 1), pd.datetime(year, 12, 31)
+        # val = self.concat_data._data['alpha'][start:end]
+        val = self.concat_data._data['alpha']
         mean = val.mean()
         sigma = 0 if math.isnan(val.std()) else val.std()
         return mean, sigma
 
     def _get_news_length_moments(self):
-        year = self.date.year
-        start, end = pd.datetime(year, 1, 1), pd.datetime(year, 12, 31)
-        news = self.concat_data._data['news'][start:end]
+        # year = self.date.year
+        # start, end = pd.datetime(year, 1, 1), pd.datetime(year, 12, 31)
+        # news = self.concat_data._data['news'][start:end]
+        news = self.concat_data._data['news']
         val = news.map(self._get_news_list_len)
         val = val[val > 0]
         mean = val.mean()

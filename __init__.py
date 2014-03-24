@@ -15,7 +15,4 @@ libs()
 import logging
 LOG = logging.getLogger('concat')
 
-from concat.core.universe import Universe
-from concat.core.interfaces import PostgresInterface
-from concat.data.blvindustry import EXCHANGES
-from concat.core.utils import save_object, load_object, namespace
+from fsprices.universe import Universe, EXCHANGES

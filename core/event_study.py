@@ -24,8 +24,6 @@ class EventDetector:
 
 class Event:
 
-    DISTANCE_THRESH = 4
-
     def __init__(self, entity_id, entity_price_data, entity_meta_data, date,
                  event_list):
         self.entity_id = entity_id
