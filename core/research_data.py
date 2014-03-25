@@ -1,15 +1,41 @@
 import pandas as pd
 
 from fsprices.topcountry_model import get_many
-from fsprices.universe import Universe
+from fsprices.universe import get_research_universe, Security
 from memnews.core import NewsList
 
+from blvutils.gentypes import FlipDict
+from blvutils.redishelpers import StringNamespace
+from concat_overlord.dbpools import NEWSDB
+from collections import Counter
 
-def get_research_data(entity_ids, start_date, end_date):
+
+def get_research_data_by_entity(entity_ids, start_date, end_date):
     year = int(start_date[:4])
-    securities = _get_securities(entity_ids, year)
+    universe = get_research_universe(year)
+    daycount = entity_daycounts()
+    secs = [Security(v) for k, v in universe.iterrows()
+            if v['factset_entity_id'] in entity_ids
+            and _matches_criteria(v)
+            and daycount[k] > 12]
+    return _get_prices_and_news(secs, start_date, end_date)
+
+
+def get_research_data_by_country(list_of_countries, start_date, end_date):
+    year = int(start_date[:4])
+    universe = get_research_universe(year)
+    daycount = entity_daycounts()
+    secs = [Security(v) for k, v in universe.iterrows()
+            if v['country'] in list_of_countries
+            and _matches_criteria(v)
+            and daycount[v['factset_entity_id']] > 12]
+    return _get_prices_and_news(secs, start_date, end_date)
+
+
+def _get_prices_and_news(securities, start_date, end_date):
     prices = get_many(securities, start_date, end_date)
-    news = NewsList.get_by_entity(entity_ids, start_date, end_date)
+    news = NewsList.get_by_entity([s.factset_entity_id for s in securities],
+                                  start_date, end_date)
     news = news.split_by_entity()
     return _join_prices_and_news(prices, news)
 
@@ -27,6 +53,83 @@ def _join_prices_and_news(prices, news):
     return result
 
 
-def _get_securities(entity_ids, year):
-    runi = Universe.research(year)
-    return [s for s in runi if s.factset_entity_id in entity_ids]
+def _matches_criteria(sec_meta):
+    if sec_meta['avg_vol'] > 150 and sec_meta['market_cap'] > 20000:
+        return True
+    return False
+
+
+def entity_daycounts():
+    res = Counter()
+    add_reuters_counts(res)
+    add_awp_counts(res)
+    return res
+
+
+def add_reuters_counts(res):
+    transl = ric_entity_transl()
+    for ric, count in get_ric_daycounts().items():
+        entity = transl.flipget(ric)
+        if entity and res.get(entity, 0) < count:
+            res[entity] += count
+
+
+def add_awp_counts(res):
+    transl = isin_entity_transl()
+    for isin, count in get_awp_daycounts().items():
+        entity = transl.flipget(isin)
+        if entity:
+            res[entity] += count
+
+
+def get_ric_daycounts():
+    query = """
+            SELECT ric, count(ric) as count FROM (
+                SELECT
+                    DISTINCT story_time::DATE as date, unnest(rics) as ric
+                FROM reuters_story
+                WHERE story_time > %s
+            ) as r
+            GROUP BY ric
+            HAVING count(ric) > 10
+            """
+    return {r['ric']: r['count']
+            for r in NEWSDB.execute(query, ('2011-01-01',))
+            if '.' in r['ric'] and r['ric'][0] != '.'}
+
+
+def get_awp_daycounts():
+    query = """
+            SELECT isin, count(isin) as count FROM (
+                SELECT
+                    DISTINCT story_time::DATE as date, unnest(isins) as isin
+                FROM awp_story
+                WHERE story_time > %s
+            ) as r
+            GROUP BY isin
+            HAVING count(isin) > 4
+            """
+    return {r['isin']: r['count']
+            for r in NEWSDB.execute(query, (pd.datetime(2011, 1, 1),))}
+
+
+def redis():
+    return StringNamespace('memnews:entity_security_transl')
+
+
+def ric_entity_transl():
+    key = 'ric_entity_transl'
+    res = redis().get(key)
+    if not res:
+        res = make_entity_ric_transl()
+        redis().store(key, res, expire=ONE_DAY)
+    return FlipDict(res)
+
+
+def isin_entity_transl():
+    key = 'isin_entity_transl'
+    res = redis().get(key)
+    if not res:
+        res = make_entity_isin_transl()
+        redis().store(key, res, expire=ONE_DAY)
+    return FlipDict(res)
