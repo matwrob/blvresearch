@@ -9,6 +9,9 @@ from blvutils.redishelpers import StringNamespace
 from concat_overlord.dbpools import NEWSDB
 from collections import Counter
 
+from memnews.entity_security_transl import (
+    ric_entity_transl, isin_entity_transl
+)
 
 def get_research_data_by_entity(entity_ids, start_date, end_date):
     year = int(start_date[:4])
@@ -115,21 +118,3 @@ def get_awp_daycounts():
 
 def redis():
     return StringNamespace('memnews:entity_security_transl')
-
-
-def ric_entity_transl():
-    key = 'ric_entity_transl'
-    res = redis().get(key)
-    if not res:
-        res = make_entity_ric_transl()
-        redis().store(key, res, expire=ONE_DAY)
-    return FlipDict(res)
-
-
-def isin_entity_transl():
-    key = 'isin_entity_transl'
-    res = redis().get(key)
-    if not res:
-        res = make_entity_isin_transl()
-        redis().store(key, res, expire=ONE_DAY)
-    return FlipDict(res)

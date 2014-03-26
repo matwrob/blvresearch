@@ -2,7 +2,7 @@ import pandas as pd
 import math
 
 from blvresearch.core.event_study import Event
-from memnews import NewsList
+from concat.core.news import NewsList
 
 
 class NewsEvent(Event):
