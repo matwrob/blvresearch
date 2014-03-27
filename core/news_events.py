@@ -69,6 +69,10 @@ class NewsEvent(Event):
         mean, sigma = self._get_news_length_moments()
         return self._event_day_news_amount < mean
 
+    @property
+    def has_no_news(self):
+        return self._event_day_news_amount == 0
+
     def _get_alpha_moments(self):
         # year = self.date.year
         # start, end = pd.datetime(year, 1, 1), pd.datetime(year, 12, 31)
