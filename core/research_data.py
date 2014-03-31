@@ -13,24 +13,26 @@ from memnews.entity_security_transl import (
     ric_entity_transl, isin_entity_transl
 )
 
-def get_research_data_by_entity(entity_ids, start_date, end_date):
+def get_research_data_by_entity(entity_ids, criteria_func,
+                                start_date, end_date):
     year = int(start_date[:4])
     universe = get_research_universe(year)
     daycount = entity_daycounts()
     secs = [Security(v) for k, v in universe.iterrows()
             if v['factset_entity_id'] in entity_ids
-            and _matches_criteria(v)
+            and criteria_func(v)
             and daycount[k] > 12]
     return _get_prices_and_news(secs, start_date, end_date)
 
 
-def get_research_data_by_country(list_of_countries, start_date, end_date):
+def get_research_data_by_country(list_of_countries, criteria_func,
+                                 start_date, end_date):
     year = int(start_date[:4])
     universe = get_research_universe(year)
     daycount = entity_daycounts()
     secs = [Security(v) for k, v in universe.iterrows()
             if v['country'] in list_of_countries
-            and _matches_criteria(v)
+            and criteria_func(v)
             and daycount[v['factset_entity_id']] > 12]
     return _get_prices_and_news(secs, start_date, end_date)
 
@@ -54,12 +56,6 @@ def _join_prices_and_news(prices, news):
             if len(n) > 0:
                 result[sec.factset_entity_id] = price_data.join(n)
     return result
-
-
-def _matches_criteria(sec_meta):
-    if sec_meta['avg_vol'] > 150 and sec_meta['market_cap'] > 20000:
-        return True
-    return False
 
 
 def entity_daycounts():
