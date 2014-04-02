@@ -44,6 +44,11 @@ class NewsEvent(Event):
         return self._event_day_alpha < mean - sigma
 
     @property
+    def alpha_is_greater_than_miu_minus_2_sigmas(self):
+        mean, sigma = self._get_alpha_moments()
+        return self._event_day_alpha > mean - 2 * sigma
+
+    @property
     def has_relevant_news(self):
         nl = self.concat_data.series_after('news', lag=0, length=1)[0]
         result = [n for n in nl if n.relevance[self.entity_id]['score'] > 0.3]
