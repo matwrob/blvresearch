@@ -1,0 +1,1378 @@
+000YN7-E 2013-03-11  Energy Minerals - USA
+RETURN: -0.295000873667
+
+       Walter Energy: BMO cuts to market perform
+
+       Walter Energy outlines progress on business plan
+
+       Audley Capital urges stockholders to take no action about Walter Energy'S proxy materials
+
+       Walter Energy says open to more production cuts, assets sale
+
+       Walter Energy says open to more production cuts, assets sale
+###############
+event during long downward drift, no day with more news occurred over the next
+20 trading days
+
+
+
+008TML-E 2011-08-31  Consumer Services - Hong Kong
+RETURN: -0.412066252704
+
+       Galaxy's underlying profit beats expectations, shares up
+
+       Galaxy's underlying profit beats f'cast on Macau might
+
+       Galaxy misses estimates for H1 net profit
+
+       Galaxy's underlying profit beats expectations, shares up
+
+       Hong Kong - August 31
+###############
+day outside Concat's scope
+
+
+
+008TML-E 2012-05-02  Consumer Services - Hong Kong
+RETURN: -0.226055554803
+
+       Wynn gets green light for new Macau casino project
+
+       Macau gambling revenue jumps on new casino opening
+
+       Macau gambling revenue jumps 22 pct in April
+
+       Macau gambling revenue jumps 22 pct in April
+###############
+this company has data in Concat starting only on 19.11.2012
+
+
+
+000FGN-E 2012-04-20  Electronic Technology - USA
+RETURN: -0.140921914917
+
+       Nomura raises Cypress Semiconductor price target
+
+       Capstone cuts Cypress Semiconductor to hold
+
+       Chipmaker AMD's results beat expectations
+
+       Chipmaker AMD's results point to better PC market
+
+       Wedbush raises Cypress Semiconductor price target
+
+       Thinkequity raises Cypress Semiconductor price target
+
+       JP Morgan raises Cypress Semiconductor target
+###############
+stock price plummed afterwards; no day with more news occurred afterwards,
+many agencies raised price target of CS on the 21st of April, only one cut
+to hold from buy (Capstone)
+
+
+
+081904-E 2011-12-06  Energy Minerals - USA
+RETURN: -0.284867214537
+
+       Alpha Natural enters settlement on Big Branch mine explosion
+
+       Alpha to pay $209 mln over coal mine disaster
+
+       Alpha to pay $209 mln over coal mine disaster
+
+       Coal co Alpha to pay $200 mln over mine disaster
+
+       US may issue record fine to Massey Energy for mine accident -WSJ
+
+       Alpha Natural reaches settlement over Massey mine accident -WSJ
+
+       Coal co to pay $200 mln over mine disaster - report
+
+       U.S. dept of labor-MSHA imposed $10.8 mln fine following Upper Big Branch-South Mine explosion
+###############
+date outside Concat's scope
+
+
+
+081904-E 2012-06-08  Energy Minerals - USA
+RETURN: -0.236619927273
+
+       Morningstar reviewing BlackRock energy fund rating
+
+       Alpha Natural  down premarket on Kentucky mine production cut
+
+       Alpha to curtain coal output, cut 150 jobs
+
+       Alpha Natural Resources to reduce coal production from Kentucky mines
+
+       Coal miner Alpha to cut Kentucky mine production
+
+       Alpha to curtail coal output, cut 150 jobs
+
+       Alpha to curtail coal output, cut 150 jobs
+
+       Morningstar reviewing BlackRock energy fund rating
+###############
+event happened during longer downward movement of the price, another earlier
+day would have had a similar result, but was not triggered because of not
+enough news
+
+
+0018WT-E 2012-07-03  Distribution Services - USA
+RETURN: -0.176990173546
+
+       Deals of the day -- mergers and acquisitions
+
+       Moody's comments on Ingram Micro
+
+       Raymond James cuts Ingram Micro to market perform
+
+       S&P comments on Ingram Micro Inc
+###############
+also part of a longer downward drift, day earlier there was a day with even
+more news and information about 0018WT-E buying another company, this earlier
+day ended up with positive alpha; next day (2012-07-03) some agencies cut
+0018WT-E price targets and the downward movement got more momentum
+
+
+
+000PLK-E 2012-03-02  Industrial Services - USA
+RETURN: -0.199770677082
+
+       Citigroup raises Mcdermott target price
+
+       Stifel raises Mcdermott International price target
+
+       UBS raises Mcdermott International price target
+
+       William Blair raises Mcdermott price target
+
+       Stifel raises Mcdermott International price target
+###############
+outside Concat's time horizon
+
+
+000C6X-E 2011-09-06  Energy Minerals - USA
+RETURN: -0.171347398485
+
+       US Gulf offshore oilpatch slowly returning
+
+       US Gulf refiners eye storm; half crude output cut
+
+       US Gulf oil producers restaff ops after Lee
+
+       Apache restaffing, restarting U.S. Gulf ops
+
+       US Gulf offshore oilpatch slowly returning
+
+       US Gulf offshore oilpatch slowly returning
+
+       US Gulf refiners eye storm; half crude output cut
+
+       US Gulf oil producers restaff operations after Lee
+
+       New Zealand newspapers - Sept 5
+
+       Apache: Weather hampering U.S. Gulf restaffing
+###############
+outside Concat's time horizon
+
+
+
+000L4D-E 2012-02-01  Non-Energy Minerals - USA
+RETURN: -0.144665898969
+
+       Golden Star to reopen Ghana plant, sees output to rise
+
+       Golden Star Resources restarts its oxide plant at Bogoso/Prestea mine
+
+       Golden Star Resources restarts its oxide plant at Bogoso/Prestea Mine
+###############
+outside Concat's time horizon
+
+
+
+00172L-E 2011-10-17  Finance - USA
+RETURN: -0.155120744625
+
+       Charles Schwab misses slightly as markets weigh
+
+       The money manager version of 'Moneyball'
+
+       Online brokerage profits get fleeting boost
+
+       Charles Schwab misses slightly as markets weigh
+
+       Charles Schwab misses slightly as markets weigh
+
+       The money manager version of 'Moneyball'
+
+       Charles Schwab misses slightly as markets weigh
+
+       Online brokerage profits get fleeting boost
+###############
+outside Concat's time horizon
+
+
+
+0612NN-E 2012-06-20
+RETURN: -0.225369055329
+
+       Venoco CEO gets financing letter for buyout deal
+
+       Venoco announces receipt of highly confident letter by CEO
+
+       Venoco CEO gets financing letter for buyout deal
+###############
+not in the tool
+
+
+
+05WHFZ-E 2012-02-23  Energy Minerals - USA
+RETURN: -0.168899980757
+
+       US oil cos see higher 2012 output
+
+       Oil cos see higher 2012 output, gas-focused cos cut view
+
+       Concho Resources Q4 results
+###############
+outside Concat's time horizon
+
+
+
+003NG9-E 2012-03-22  Energy Minerals - USA
+RETURN: -0.163390804393
+
+       Cimarex begins tender offer
+
+       Moody's ups Cimarex to Ba1
+
+       Cimarex to raise $650 mln in senior notes offering
+
+       S&P rates Cimarex Energy notes 'BB+'
+###############
+outside Concat's time horizon
+
+
+
+0013HW-E 2011-10-26  Consumer Services - USA
+RETURN: -0.383569018399
+
+       TV group CME's Q3 revenue beats estimates
+
+       Central European Media Enterprises Q3 results
+
+       Broadcaster CME Q3 revenue beats estimates on FX
+
+       Broadcaster CME sees Q4 ad spending up 2 pct
+
+       Broadcaster CME sees boosting market share in 2012
+
+       Broadcaster CME sees FY revenue around $850 mln
+
+       Broadcaster CME Q3 revenue beats estimates on FX
+###############
+outside Concat's time horizon
+
+
+
+000PYN-E 2012-04-23  Finance - USA
+RETURN: -0.238377561074
+
+       MGIC new mortgage defaults lowest in five quarters
+
+       MGIC Investment reportsQ1 results
+
+       MGIC posts seventh straight quarterly loss
+
+       US stocks to watch: Wal-Mart, PG&E, GM
+
+       MGIC Investment up in premarket after Q1 results
+
+       MGIC posts seventh straight quarterly loss
+###############
+happened during a longer downward drift, no other event of type many news &
+abnormal alpha happened afterwards (over the next 20 trading days)
+
+
+
+0BJQSB-E 2011-11-08  Energy Minerals - USA
+RETURN: -0.335907413017
+
+       HollyFrontier plans big 2012 turnarounds
+
+       HollyFrontier Q3 results beat Street on higher margins
+
+       HollyFrontier CEO says narrowed brent-wti spread will continue to support attractive product cracks as midwest and rockies markets require net imports
+
+       HollyFrontier Q3 results
+
+       HollyFrontier CEO: Good cracks despite narrowed spread
+###############
+outside Concat's time horizon
+
+
+
+00986H-E 2011-08-19  Producer Manufacturing - USA
+RETURN: -0.618256266141
+
+       Collins Stewart cuts Yingli Green Energy price target
+
+       Yingli Green Energy Q2 results
+
+       Yingli profit beats Wall St, sees sector bounce
+
+       Yingli profit beats Wall St, sees sector bounce
+
+       Yingli Green Energy sees module ASP decline in Q3
+
+       Yingli Green Q2 beats Street view on higher shipments
+###############
+outside Concat's time horizon
+
+
+
+001963-E 2011-07-27  Non-Energy Minerals - USA
+RETURN: -0.166517736662
+
+       Allegheny Technologies misses estimate, stock drops
+
+       USW members reject new ATI contract
+
+       Allegheny Technologies shares down after results
+
+       Allegheny Technologies comments on labor agreements with USW
+
+       Allegheny Technologies Q2 profit rises
+
+       Allegheny Technologies Q2 results
+
+       Allegheny Technologies profit up, but stock drops
+###############
+outside Concat's time horizon
+
+
+
+0013TZ-E 2012-05-03  Finance - USA
+RETURN: -0.191678407704
+
+       IFR - MegaFon appoints banks for US$4bn IPO
+
+       Japan trading firms likely buyers for Gavilon-sources
+
+       Temasek sells $2.5 bln stake in two China banks
+
+       Jeweller Graff gets nod for $1 bln IPO - sources
+
+       Morgan Stanley, Clean Power in new solar financing
+
+       Japan trading firms likely Gavilon buyers-sources
+
+       CEOs of big U.S. banks bend Fed's ear
+
+       Exchanges pile in to tap OTC clearing reforms
+
+       Japan trading firms likely buyers for Gavilon-sources
+
+       IFR - MegaFon appoints banks for US$4bn IPO
+
+       Mobilfunker MegaFon engagiert nur zwei Banken für Milliarden-IPO
+
+       Deutsche sr banker Heaton to join Morgan Stanley
+
+       Deutsche sr banker Heaton to join Morgan Stanley
+
+       Jeweller Graff gets nod for $1 bln IPO - sources
+
+       Temasek seeks $2.4bln with China bank stake sales
+
+       IFR - MegaFon names only two banks for US$4bn IPO
+
+       Temasek sells $2.5 bln China bank shares, reshuffles holdings
+
+       Goldman CEO: support for gay rights 'not without price'
+
+       IFR - MegaFon names only two banks for US$4bn IPO
+
+       US-Regulierer straft weiteren ETF-Händler ab
+###############
+happened during a longer downward drift, other days with many news and abnormal
+alpha happened over the next 20-trading days
+
+
+
+000CDS-E 2011-11-02  Electronic Technology - USA
+RETURN: -0.16550651789
+
+       Atmel Q3 profit beats estimates
+
+       Collins Stewart cuts Atmel price target
+
+       Atmel reports Q3 results
+
+       Needham cuts Atmel to buy
+
+       Atmel gives Q4 outlook
+
+       Atmel sees weak sales to iPad rivals in Q4, shares fall
+
+       Wedbush cuts Atmel price target
+
+       FBR Capital Markets cuts Atmel price target
+
+       ThinkEquity cuts Atmel price target
+
+       Barclays cuts Atmel price target
+
+       Small chipmakers see macro economy hurting Q4
+###############
+outside Concat's time horizon
+
+
+
+000R3K-E 2011-07-19  Finance - USA
+RETURN: -0.168000418056
+
+       Fight looms over Obama pick for consumer agency
+
+       BofA looks to clear up cloudy mortgage outlook
+
+       BofA narrows global wealth focus to slim non-US assets 3 pct
+
+       Former gallery director, Morse, to pay restitution
+
+       Bofa  CEO says economy "grinding along"
+
+       Merrill adviser ranks rise to highest since merger
+
+       Wells Fargo profit rises, beats estimates
+
+       Federated Investment sues Countrywide, BofA over mortgage losses
+
+       Bank of America hits new 52-week low
+
+       BofA CEO says international businesses growing
+
+       BofA to reduce risk assets $200 bln-$250 bln by '12
+
+       Wall Street banks' quarterly commodities trading risk
+
+       Citic adds global firms to help manage $2 bln HK listing-IFR
+
+       Citic adds BofA, CLSA, HSBC, Morgan Stanley in $2 bln HK deal -IFR
+
+       BofA, Wells Fargo up; Goldman Sachs lower after results
+
+       Bank of America reverses earlier gains; off 0.4 percent premarket
+
+       BofA Merrill among four on BHEL shortlist -sources
+
+       BofA CFO says bank preparing for possible debt default
+
+       Obama vows fight with pick for consumer agency chief
+
+       Bank of America Q2 results
+
+       Merrill adviser ranks highest since merger
+
+       BofA posts Q2 loss on mortgage settlement
+
+       Obama vows to fight for pick for consumer agency chief
+
+       Goldman Sachs Q2 results
+
+       Northern Trust promotes CFO Morrison
+
+       BofA reports $8.8 billion net loss, worst ever
+
+       Bank of Ameria macht Milliardenverlust wegen Hypotheken-Lasten
+
+       BofA gives outlook on debit rule impact, non-GSE reps and warranties exposure
+
+       BofA posts Q2 loss on mortgage settlement
+
+       BofA reports $8.8 billion net loss, worst ever
+
+       India BHEL shortlists BofA Merrill, 3 others for share sale-sources
+
+       BofA reports worst ever loss, margins shrink
+
+       BofA posts $8.8 billion net loss, worst ever
+
+       U.S. banks project lower debit card fee losses
+###############
+outside Concat's time horizon
+
+
+
+000R3K-E 2011-09-06  Finance - USA
+RETURN: -0.254859958755
+
+       Zeitung - Bank of America erwägt Abbau von bis zu 30.000 Stellen
+
+       Fitch affirms Banc of America Securities India
+
+       Your Practice - Can you take it with you?
+
+       Republicans firm in blocking US consumer agency head
+
+       China bought back a lot of BofA assets: report
+
+       CCB says BofA strategic agreement extended to end 2016
+
+       JP Morgan, BofA Merrill Lynch, BlackRock
+
+       Financial Times - Sept 5
+
+       India to offer up to 427.77 mln ONGC shares in offer -source
+
+       India's ONGC to launch $2.5 bln offer Sept 20-sources
+
+       U.S. banks offered deal over lawsuits - FT
+
+       Neue Front im US-Hypothekenstreit der Deutschen Bank
+
+       Temasek hires Merrill SE Asia investment bank head
+
+       U.S. regulator sues major banks over mortgages
+
+       Republicans and Democrats fight, Cordray waits
+
+       Republicans and Democrats fight, Cordray waits
+
+       Buffett rally ends as BofA falls under pre-deal levels
+
+       JP Morgan, BofA Merrill Lynch, BlackRock
+
+       JP Morgan, BofA Merrill Lynch, BlackRock
+
+       Temasek hires Merrill SEA banker as senior MD-sources
+
+       Nomura cuts price targets on Goldman, Citigroup, 11 others
+
+       Neue Front im US-Hypothekenstreit der Deutschen Bank
+
+       Temasek hires Merrill SE Asia investment bank head
+
+       NEW ISSUE-Union Bank of India to meet investors for offshore bond
+
+       CCB says BofA agreement extended to 2016
+
+       India's ONGC to launch $2.5 bln offer Sept 20-sources
+
+       U.S. banks offered deal over lawsuits-FT
+
+       BofA job cuts could reach 30,000- report
+
+       Neue Front im US-Hypothekenstreit der Deutschen Bank
+
+       U.S. banks offered deal over lawsuits - FT
+
+       India's ONGC to launch $2.5 bln offer Sept 20-sources
+
+       BofA planning to cut workforce by "much more" than 10,000 jobs-report
+###############
+outside Concat's time horizon
+
+
+
+000R3K-E 2012-04-13  Finance - USA
+RETURN: -0.152296393203
+
+       Ex-Merrill veterans open independent brokerage firm
+
+       Bank of America CEO Moynihan must testify in MBIA lawsuit -- judge
+
+       BofA, US Bancorp sued for role as WaMu bond trustee
+
+       Ally executive takes marketing post at TD Bank
+
+       Wells Fargo reports higher first-quarter profit
+
+       Wells Fargo profit rises, but expense concerns weigh
+
+       Goldman-linked $13 bln hedge fund Capula expands to Hong Kong
+
+       Kreise - Beratungsfirma AlixPartners steht zum Verkauf
+
+       JPMorgan gets boost from better economy, trading
+
+       Option traders bullish on banks as earnings loom
+
+       MF Global trustee may sue company employees
+
+       JPMorgan gets boost from better economy, trading
+
+       Goldman-Sachs-Chef steigert eigene Vergütung auf 16,2 Mio Dollar
+
+       Option traders bullish on banks as earnings loom
+
+       JPMorgan Chase 1st-qtr results
+
+       JPMorgan profit falls 3 pct but tops Street view
+
+       Merrill bankers follow Orcel to rival UBS
+
+       BofA, US Bancorp sued for role as WaMu bond trustee
+
+       Wells Fargo reports higher profit on mortgage gains
+
+       Merrill bankers follow Orcel to rival UBS
+
+       Wells Fargo reports higher first-quarter profit
+
+       BofA launches second round of bulk sales of foreclosed homes
+
+       JPMorgan gets boost from better economy, trading
+
+       More Merrill dealmakers follow Orcel to UBS-source
+
+       Next Merrill departure wave seen legacy BofA brokers
+
+       WELLS FARGO, BANK OF AMERICA MERRILL LYNCH
+
+       Wells Fargo reports higher profit on mortgage income
+
+       UBS adds advisers with $2 bln in client assets
+
+       Goldman-linked $13 bln hedge fund Capula expands to HK
+
+       Wells Fargo lands former UBS wealth adviser
+
+       Goldman-linked $13 bln hedge fund Capula expands to Hong Kong
+###############
+two days later there was another day with even more news and afterwards
+the price plunged
+
+
+
+
+000CGK-E 2012-05-10  Consumer Non-Durables - USA
+RETURN: -0.216783348927
+
+       Avon prüft verbessertes Angebot von Parfümhersteller Coty
+
+       Futures rise in rebound from earlier losses
+
+       Futures signal gains after string of losses
+
+       Wall St rebounds, but Cisco weighs
+
+       Deals of the day -- mergers and acquisitions
+
+       Coty raises Avon bid, gets Berkshire's backing
+
+       Fitch puts Avon's ratings on watch negative after Coty bid
+
+       Avon receives letter from Coty
+
+       Avon Products up in premarket on revised Coty proposal
+
+       Coty raises Avon bid, gets Berkshire's backing
+
+       Financial Times - May 10
+
+       Coty raises Avon bid, sets deadline
+
+       Coty raises Avon bid, gets Berkshire's backing
+
+       Coty raises Avon bid, sets talks deadline
+###############
+happened during a downward movement, followed by another day (15.05.2010) with
+even more news and more severe drop, which added even more momentum to the
+downward spiral
+
+
+
+000LMP-E 2011-07-29  Industrial Services - USA
+RETURN: -0.186523642548
+
+       Helmerich posts strong Q3, wins drilling contracts
+
+       Helmerich & Payne cuts FY2011 capex estimate - conf call
+
+       Helmerich & Payne profit beats; wins contracts for 20 rigs
+
+       Patterson-UTI, Hercules signal onshore boom heading offshore
+
+       Helmerich and Payne Q3 results
+###############
+outside Concat's time horizon
+
+
+
+000TCB-E 2013-10-08  Finance - USA
+RETURN: -0.144341060742
+
+       Wall St edges lower as a little progress made in Washington
+
+       Futures flat as Washington deadlock continues
+
+       Wall St set to open flat, slight progress made in Washington
+
+       Futures flat as Washington deadlock drags on
+###############
+day earlier was a big increase (+ 7%) which created kind of a peak of upward
+movement, that took place over last 1 and a half months, and 08.10.2013
+triggered a downward movement
+
+
+
+008V0H-E 2013-11-19  Producer Manufacturing - USA
+RETURN: -0.149417806905
+
+       Trina Solar: Roth Capital Partners raises to buy
+
+       Dow pops back up above 16,000; Home Depot up on results
+
+       China's Trina Solar posts first profit in nine quarters
+
+       Trina Solar up 12.4 pct premarket after results
+
+       Futures little changed amid few market catalysts
+
+       China's Trina Solar posts first profit in nine quarters
+
+       China's Trina Solar posts first profit in nine quarters
+
+       Trina Solar reports Q3 earnings per ADS $0.14
+
+       Futures tick lower as traders scramble for catalysts
+
+       Wall St to open flat amid few market catalysts
+
+       Wall St inches lower; Dow slips after hitting 16,000
+
+       Wall Street drifts amid few market catalysts
+###############
+before the event, it was more or less flat over last 2 months, before it raised
+over around half a year, this day hasn't done much but on 25.11.2013 there was
+a big drop (-10%) without news, and on 29.11.2013 there was a day with a single
+story saying 008V0H-E enters into joint venture with another company
+
+
+
+00172J-E 2011-07-11  Energy Minerals - USA
+RETURN: -0.140035557919
+
+       Vanguard Natural offers $545 mln for rest of Encore Energy
+
+       Vanguard Natural to buy Encore Energy for $545 mln
+
+       Vanguard Natural Resources, Encore Energy Partners ink merger agreement
+
+       Vanguard Natural to buy Encore Energy
+###############
+outside Concat's time horizon
+
+
+
+002S5B-E 2012-07-24  Health Technology - USA
+RETURN: -0.169789520234
+
+       Stifel cuts InterMune price target
+
+       Canaccord genuity cuts InterMune to hold
+
+       William Blair cuts InterMune price target
+
+       Jefferies cuts InterMune price target
+###############
+happened during a longer downward movement, day earlier there was another day
+with many news pieces and a drop of -13%, where forecasts of 002S5B-E were
+changed and RBS cut price targe
+
+
+
+002XRT-E 2011-11-09  Technology Services - USA
+RETURN: -0.281997379309
+
+       SINA down in extended trading after results
+
+       SINA Q3 profit beats Street view
+
+       SINA Q3 results
+
+       Sina swings to Q3 loss, cautious on 2012 ad spend outlook
+
+       SINA shares reverse decline, up 1.1 pct after the bell
+
+       Sina swings to Q3 loss, cautious on 2012 ad spend outlook
+
+       Sina swings to Q3 loss, cautious on 2012 ad spend outlook
+###############
+outside Concat's time horizon
+
+
+
+0013M0-E 2011-11-16  Non-Energy Minerals - USA
+RETURN: -0.201603821285
+
+       Century Aluminum CEO resigns, sues company
+
+       US stocks to watch: Tyco, Dell, Peabody
+
+       Century Aluminum CEO resigns, sues company
+
+       Century Aluminum CEO resigns, appoints new CEO
+###############
+outside Concat's time horizon
+
+
+
+008FJT-E 2011-08-05  Electronic Technology - USA
+RETURN: -0.186227061723
+
+       UBS cuts First Solar price target
+
+       RBC cuts First Solar price target
+
+       First Solar profit falls as panel prices slump
+
+       First Solar profit falls, cuts 2011 forecast
+
+       Caris cuts First Solar price target
+
+       Jefferies cuts First Solar price target
+
+       German stocks - Factors to watch on August 5
+
+       German stocks - Factors to watch on August 5
+
+       First Solar ASPs fell 13 pct in Q2
+
+       S&P cuts First Solar price target
+
+       First Solar profit falls, cuts 2011 forecast
+
+       First Solar kappt nach Gewinnrückgang Jahresprognose
+
+       First Solar down in extended trading after results
+
+       First Solar Q2  results
+
+       First Solar profit falls, cuts 2011 forecast
+
+       Citigroup cuts First Solar price target
+###############
+outside Concat's time horizon
+
+
+
+008FJT-E 2012-04-18  Electronic Technology - USA
+RETURN: -0.325126825519
+
+       US SMALL/MIDCAPS-Stocks higher on earnings, M&A deal
+
+       Macquarie cuts First Solar price target
+
+       Citigroup cuts First Solar price target
+
+       UBS raises First Solar price target
+
+       Cantor raises First Solar to hold
+
+       Caris cuts First Solar price target
+
+       New York Times business news - April 18
+
+       Jefferies cuts First Solar price target
+
+       Wall Street Journal - April 18
+
+       RBC cuts First Solar price target
+
+       Wunderlich cuts First Solar to sell
+
+       Canaccord genuity cuts First Solar price target
+###############
+this event looks like triggered a downward mvmt, but later on 04.05.2012 there
+was another day (they published results and named a new CEO) with more news
+pieces, and downward spiral continued
+
+
+
+008FJT-E 2012-05-04  Electronic Technology - USA
+RETURN: -0.274973925784
+
+       RBC cuts First Solar price target
+
+       First Solar Q1 results
+
+       Jefferies cuts First Solar target price
+
+       First Solar posts loss on charges, weak prices
+
+       Barclays cuts First Solar price target
+
+       First Solar names new CEO, posts quarterly loss
+
+       Canaccord Genuity cuts First Solar price target
+
+       Cantor raises First Solar target price
+
+       First Solar says improved solar module efficiency
+
+       ThinkEquity cuts First Solar price target
+
+       Macquarie cuts First Solar target price
+
+       First Solar names new CEO
+
+       First Solar shares up 2.9 percent after the bell
+
+       First Solar ups forecast after miss, Sunpower beats
+
+       US-Konzern First Solar überrascht mit roten Zahlen
+###############
+see the previous event
+
+
+
+0B34WJ-E 2011-10-25  Transportation - USA
+RETURN: -0.200645591088
+
+       US Congress tackles EU emissions plan for airlines
+
+       US House votes to ban airline compliance with EU law
+
+       US House votes to ban airline compliance with EU law
+
+       US Congress tackles EU emissions plan for airlines
+
+       U.S. seen respecting EU carbon law -EU climate commissioner
+
+       Delta profit misses Street view, hit by fuel costs
+
+       Delta profit misses Street view, hit by fuel costs
+
+       Delta profit misses Street view, hit by fuel costs
+###############
+outside Concat's time horizon
+
+
+
+0B34WJ-E 2012-07-12  Transportation - USA
+RETURN: -0.343506104317
+
+       United Continental orders 150 Boeing 737 aircraft
+
+       United to refresh fleet with $14.7 bln Boeing order
+
+       Avolon commits to up to 30 Boeing 737s
+
+       United to refresh fleet with $14.7 bln Boeing order
+
+       Boeing says United Continental Holdings' orders worth $14.7 bln
+
+       SkyWest orders 100 Mitsubishi regional jets
+
+       Boeing hängt Airbus auf Luftfahrtmesse Farnborough ab
+
+       United to refresh fleet with $14.7 bln Boeing order
+
+       Major Boeing order to bring airshow to a close
+###############
+this event seems to have triggered a downward movement, on 26.07.2012 there was
+another day with even more stories published and a big drop, where they
+published results
+
+
+
+00BN44-E 2011-11-30  Industrial Services - USA
+RETURN: -0.168582958064
+
+       text-S&P rates Transocean Inc.'S new senior unsecured notes BBB
+
+       Transocean updates on pricing of share offering
+
+       BMO cuts Transocean price target
+
+       Rbc cuts Transocean Ltd price target
+
+       Susquehanna cuts Transocean price target
+
+       Transocean to sell stock, shares hit 7-year low
+
+       Seadrill Q3 down on financial losses, bullish on rig market
+
+       Transocean announces proposed senior notes offering
+
+       Moody's rates Transocean proposed notes Baa3
+
+       UBS raises Transocean price target
+###############
+outside Concat's time horizon
+
+
+
+0021JW-E 2013-04-12  Technology Services - USA
+RETURN: -0.183080928267
+
+       JP Morgan, Wells Fargo, Infosys, BlackBerry, Forest Oil
+
+       Focus on sales, not margins, drives Infosys turnaround
+
+       JP Morgan, Wells Fargo, Infosys, Netflix, Coal stocks
+
+       Infosys revenue forecast disappoints, shares dive
+
+       Infosys quarterly profit rises 3 pct, beats estimates marginally
+
+       JP Morgan, Wells Fargo, Infosys, Rally Software
+
+       Infosys revenue forecast disappoints, shares dive
+
+       Infosys forecasts tepid revenue growth, shares dive
+
+       JP Morgan, Wells Fargo, Infosys, BlackBerry, Forest Oil
+
+       Focus on sales, not margins, drives Infosys turnaround
+
+       JP Morgan, Wells Fargo, Infosys, Crumbs Bake, Gold stocks
+
+       Infosys, JP Morgan, Wells Fargo, Ashland, Netflix
+###############
+this event seems to have triggered a downward movement, next days brought no
+special information in the news until 08.05.2013, when price went up after
+results and 2 days later another downward movement started with a drop of -6%
+(10.05.2013) without any news
+
+
+
+003Q0M-E 2013-10-23  Energy Minerals - USA
+RETURN: -0.193238976342
+
+       Kodiak Oil and Gas: Canaccord Genuity raises target price
+
+       Range Resources: Global Hunter raises to buy
+
+       Kodiak Oil & Gas: Imperial Capital raises price target
+
+       Kodiak Oil & Gas: Wunderlich raises target price
+###############
+it seems this day, followed by the next one (with 1 agency cutting price
+target, but keeping "buy" rating) have used all the steam that driven this
+stock up over the last half a year, then a downward slide started; on 1st of
+November results show up, with soaring profit that missed expectations anyway
+
+
+
+000HZ5-E 2011-12-16  Consumer Durables - USA
+RETURN: -0.249592405196
+
+       How Zynga became a $9 billion company
+
+       Angry Birds maker eyes 2013 Hong Kong IPO -report
+
+       "Angry Birds" maker eyes Hong Kong IPO
+
+       Kreise - Zynga nimmmt eine Mrd Dollar bei Börsengang ein
+
+       Zynga dips below IPO price
+
+       Zynga dips below IPO offer price
+
+       "Angry Birds" maker eyes Hong Kong IPO
+
+       Zynga opens 10 percent above IPO price
+
+       Zynga geht an die Börse und fühlt für Facebook vor
+
+       Electronic Arts to change NASDAQ ticker symbol to "EA"
+
+       "Angry Birds" maker eyes Hong Kong IPO
+###############
+outside Concat's time horizon
+
+
+
+0027L0-E 2012-06-22  Finance - USA
+RETURN: -0.152056792265
+
+       Moody's tilts playing field towards safe haven banks
+
+       Universal Music uses star power for merger hearing
+
+       Citi names American Express exec to head Brazil
+
+       Moody's cuts ratings of 15 banks, Morgan Stanley down 2 notches
+
+       No fast recovery seen as M&A activity drops 25 pct
+
+       Moody's tilts playing field towards safe haven banks
+
+       Moody's senkt wie angekündigt Rating für mehrere Großbanken
+
+       Citigroup, Barclays, Neuberger Berman
+
+       Morgan Stanley shares up in extended trade following Moodys downgrade
+
+       HOW TO PLAY IT - Summer of discontent
+
+       Morgan Stanley shifted derivatives in 1st quarter
+
+       Moody's takes rating action on Citigroup's Australian and Korean subsidiaries
+
+       Citigroup, Neuberger Berman, Threadneedle
+
+       Moody's cuts ratings of 15 banks, Morgan Stanley down 2 notches
+
+       Citi to buy part of SocGen's shipping portfolio
+
+       Moody's lowers rtgs of Citigroup's Japan subsidiaries
+
+       Moody's cuts ratings of 15 banks, Morgan Stanley down 2 notches
+
+       Citi to buy part of SocGen's shipping portfolio
+
+       Moody's tilts playing field toward safe-haven banks
+
+       Citi statement on Moody's downgrade
+
+       Citi to buy part of SocGen's shipping loan book
+
+       HIGHLIGHTS: Moody's downgrades global banks
+
+       Moody's stuft weitere 15 Großbanken herab - Auch Deutsche Bank
+
+       Wall Street Journal - June 22
+
+       New York Times business news - June 22
+###############
+this day seems to have triggered a downward spiral, no other day with more
+news occurred over the next days only until 16.07.2012, which started an
+upward move of the price
+
+
+
+
+000BNN-E 2012-10-23  Non-Energy Minerals - USA
+RETURN: -0.29069745002
+
+       AK Steel posts wider third-quarter loss
+
+       AK Steel CEO shows interest in mills for sale in Brazil, U.S.
+
+       AK Steel posts wider 3rd-qtr loss, sees more red ink
+
+       AK Steel Q3 loss per share $0.55
+
+       AK Steel - Eventuell interessiert an ThyssenKrupp-Werken in USA Und Brasilien
+
+       AK Steel posts quarterly loss on weak prices, demand
+
+       AK Steel could have interest in Thyssenkrupp  mills in Brazil, U.S. - CEO
+###############
+there was a longer downward spiral before this event, but also afterwards
+there was a day (13.11.2012) with many more news pieces and a drop of -17%
+followed by another day with a drop of -7%. These two days fuelled the final
+return of almost -30%
+
+
+
+006N1R-E 2011-11-17  Retail Trade - USA
+RETURN: -0.390519495714
+
+       Sears' loss nearly doubles, shares fall
+
+       Wall St flat as euro zone debt fears persist
+
+       Sears' loss nearly doubles; shares fall
+
+       Wall St set for flat open, data offsets euro zone
+
+       S&P raises Sears Holdings price target to $66
+
+       Spanish bond yield worries send futures lower
+
+       Sears reports Q3 results
+
+       Wall St flat as euro zone debt fears persist
+
+       Futures drop on Spanish bond yield worries
+
+       Sears loss widens as sales fall
+
+       Sears loss widens as sales fall
+
+       Wall St drops as euro zone debt worries persist
+###############
+outside Concat's time horizon
+
+
+
+006N1R-E 2013-11-21  Retail Trade - USA
+RETURN: -0.297053930157
+
+       Sears Q3 loss per share $5.03
+
+       Banks lead Wall Street higher, supported by economic data
+
+       Banks lead Wall Street higher, supported by economic data
+
+       Weak sales, more promotions hurt Sears
+
+       Sears net loss widens on weak sales
+
+       Target profit pinched by weak U.S. sales, Canadian expansion
+
+       Wall Street climbs on promising economic data
+
+       Futures drift higher ahead of data, Target slips
+
+       Futures drift higher ahead of data
+
+       Target trims full-year forecast as Q3 sales fall short
+
+       Wall St to rise as data offsets Fed taper concern
+
+       Wall St up as data offsets Fed taper concern
+###############
+there was a longer downward move before this event, and also afterwards, 2nd,
+3rd and 4th of December had drops of -4%, -7.5% and -6% respectively, those
+days had fewer news pieces though
+
+
+
+007XKN-E 2013-03-01  Energy Minerals - USA
+RETURN: -0.186417781369
+
+       SandRidge Energy: Stifel cuts to hold
+
+       SandRidge Energy reports Q4 adj EPS $0.06
+
+       SandRidge 4th-qtr loss narrows on improved production
+
+       SandRidge Energy: Susquehanna cuts price target to $10
+
+       SandRidge quarterly loss narrows on improved production
+
+       SandRidge 4th-qtr loss narrows on improved production
+###############
+this event happend during a longer downward movement, it was followed by
+another day (14.03.2013) with even more news and a substantial drop of -5%
+
+
+
+007XKN-E 2013-03-14  Energy Minerals - USA
+RETURN: -0.171747971635
+
+       Market Chatter-Corporate finance press digest
+
+       SandRidge Energy says reached settlement agreement with TPG-Axon Capital
+
+       SandRidge strikes deal that could lead to CEO's removal
+
+       SandRidge up 1.2 percent in extended trading
+
+       New York Times business news - March 14
+
+       Wall Street Journal - March 14
+
+       SandRidge strikes deal that could lead to CEO's removal
+
+       Market Chatter-Corporate finance press digest
+
+       SandRidge strikes deal that could lead to CEO's removal
+###############
+see the previous event
+
+
+
+000PZY-E 2012-03-23  Electronic Technology - USA
+RETURN: -0.185948389093
+
+       Micron Technology reports Q2 results
+
+       Preisdruck bei Speicherchips setzt Micron zu
+
+       Micron eyes improved memory chip prices
+
+       Preisdruck bei Speicherchips setzt Micron zu
+
+       Micron CEO sees improvements in DRAM chip market
+
+       Micron posts quarterly revenue above expectations
+
+       Micron posts mixed quarterly results
+
+       Macquarie cuts Micron Technology price target
+
+       Micron posts mixed results as low chip prices weigh
+
+       Micron Technology down after results
+###############
+outside Concat's time horizon
+
+
+
+000C77-E 2013-06-21  Consumer Services - USA
+RETURN: -0.144145009894
+
+       Futures rise after two-day selloff
+
+       Wall St flat, stopping losses after Fed shock
+
+       Wall Street set to gain at open after two-day selloff
+
+       Wall Street gains modestly after two-day selloff
+
+       Wall St rebounds modestly, Oracle drags on Nasdaq
+
+       Futures bounce back after two-day selloff
+
+       Wall Street ends mostly higher in late rebound
+
+       Wall St rebound fades, Oracle drags on Nasdaq
+
+       S&P Dow Jones Indices says News Corp will replace Apollo Group in S&P 500
+###############
+there was another day earlier (12.06.2013) where a news was published about
+000C77-E acquiring another company; this day (12.06.2013) seems to have
+triggered downward movement, but there was not enough news to find that day
+important
+
+
+
+002X9M-E 2011-09-02
+RETURN: -0.661409960943
+
+       Starz to pull content from Netflix as talks fail
+
+       Wall Street Journal - Sept 2
+
+       Netflix shares fall 10 pct after Starz comments
+
+       Starz to pull content from Netflix as talks fail
+
+       Starz to pull content from Netflix as talks fail
+
+       New York Times business news - Sept 2
+
+       Starz Entertainment issues statement on status of Netflix affiliation agreement renewal discussions
+
+       Netflix says confident it can take money earmarked for starz renewal to buy other content
+
+       Starz, Netflix fail to reach renewal deal
+
+       US SMALL/MIDCAPS-Industrials down after Obama drops smog rule
+
+       U.S. judge signs off on Comcast NBC Universal buy
+###############
+
+
+
+002FQ3-E 2011-08-09
+RETURN: -0.187999199737
+
+       CEO, CFO departures signal DTZ bid likely from SGP
+
+       DTZ replaces CEO, Finance Director
+
+       CEO, CFO departures signal DTZ bid likely from SGP
+
+       CEO, FD departures signal DTZ bid likely from SGP
+###############
+

@@ -1,35 +1,6 @@
 import pandas as pd
 
 
-def get_common_events(event_list1, event_list2):
-    by_entity1 = event_list1.split_by_entity()
-    by_entity2 = event_list2.split_by_entity()
-    result = EventList()
-    for entity_id, events1 in by_entity1.items():
-        if entity_id in by_entity2.keys():
-            dates2 = [e.date for e in by_entity2[entity_id]]
-            for e in events1:
-                if e.date in dates2:
-                    result.append_event(e)
-    return result
-
-
-def get_different_events(minuend_list, subtrahend_list):
-    by_entity1 = minuend_list.split_by_entity()
-    by_entity2 = subtrahend_list.split_by_entity()
-    result = EventList()
-    for entity_id, events1 in by_entity1.items():
-        if entity_id in by_entity2.keys():
-            dates2 = [e.date for e in by_entity2[entity_id]]
-            for e in events1:
-                if e.date not in dates2:
-                    result.append_event(e)
-        else:
-            for e in events1:
-                result.append_event(e)
-    return result
-
-
 class EventDetector:
 
     def __init__(self, event_class):
@@ -216,3 +187,32 @@ class EventList:
 
     def remove_event(self, index):
         del self._events[index]
+
+
+def get_common_events(event_list1, event_list2):
+    by_entity1 = event_list1.split_by_entity()
+    by_entity2 = event_list2.split_by_entity()
+    result = EventList()
+    for entity_id, events1 in by_entity1.items():
+        if entity_id in by_entity2.keys():
+            dates2 = [e.date for e in by_entity2[entity_id]]
+            for e in events1:
+                if e.date in dates2:
+                    result.append_event(e)
+    return result
+
+
+def get_different_events(minuend_list, subtrahend_list):
+    by_entity1 = minuend_list.split_by_entity()
+    by_entity2 = subtrahend_list.split_by_entity()
+    result = EventList()
+    for entity_id, events1 in by_entity1.items():
+        if entity_id in by_entity2.keys():
+            dates2 = [e.date for e in by_entity2[entity_id]]
+            for e in events1:
+                if e.date not in dates2:
+                    result.append_event(e)
+        else:
+            for e in events1:
+                result.append_event(e)
+    return result
