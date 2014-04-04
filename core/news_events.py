@@ -34,6 +34,10 @@ class NewsEvent(Event):
         return self._event_day_alpha < -0.02
 
     @property
+    def alpha_is_smaller_than_minus_4pct(self):
+        return self._event_day_alpha < -0.04
+
+    @property
     def alpha_is_smaller_than_miu_minus_2_sigmas(self):
         mean, sigma = self._get_alpha_moments()
         return self._event_day_alpha < mean - 2 * sigma

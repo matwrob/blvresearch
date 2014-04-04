@@ -1,4 +1,5 @@
 import pandas as pd
+import re
 
 
 class EventDetector:
@@ -128,6 +129,14 @@ class EventList:
         if len(event_list) > 0:
             self._events.extend(event_list._events)
 
+    def remove_consecutive_events(self, business_days):
+        dates = [e.date for e in self]
+        result = [dates[0]]
+        for d in dates[1:]:
+            if d > result[-1] + pd.tseries.offsets.BDay(business_days):
+                result.append(d)
+        return self.from_list([e for e in self if e.date in result])
+
     @property
     def last(self):
         return self._events[len(self._events) - 1]
@@ -161,6 +170,13 @@ class EventList:
         result = EventList()
         for k, v in dict_of_event_lists.items():
             result.extend(v)
+        return result
+
+    @classmethod
+    def from_list(cls, list_of_events):
+        result = EventList()
+        for e in list_of_events:
+            result.append_event(e)
         return result
 
     def split_by_date(self):
@@ -216,3 +232,11 @@ def get_different_events(minuend_list, subtrahend_list):
             for e in events1:
                 result.append_event(e)
     return result
+
+
+def check_event_news_headlines(event, regex):
+    news = event.concat_data.series_after('news', lag=0, length=1)[0]
+    for n in news:
+        if re.search(regex, n['clean_headline']):
+            return True
+    return False

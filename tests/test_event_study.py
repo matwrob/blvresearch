@@ -76,7 +76,7 @@ class TestEventConcatData(unittest.TestCase):
         lag = 1  # value one day after the event day (the next day)
         expected = pd.Series(
             data=-0.022725282524918643,
-            index=pd.DatetimeIndex([pd.datetime(2011, 1, 18)])
+            index=pd.DatetimeIndex([pd.datetime(2011, 1, 15)])
         )
         result = f('abs_ret', lag=lag, length=length)
         pd.np.testing.assert_array_equal(result, expected)
@@ -84,7 +84,7 @@ class TestEventConcatData(unittest.TestCase):
         lag = 2  # value two days after the event day
         expected = pd.Series(
             data=-0.0053275376563269583,
-            index=pd.DatetimeIndex([pd.datetime(2011, 1, 19)])
+            index=pd.DatetimeIndex([pd.datetime(2011, 1, 18)])
         )
         result = f('abs_ret', lag=lag, length=length)
         pd.np.testing.assert_array_equal(result, expected)

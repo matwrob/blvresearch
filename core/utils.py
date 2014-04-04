@@ -3,8 +3,8 @@ import scipy.stats as stats
 import numpy as np
 
 
-def mean_test(event_list, attribute, length):
-    series = [e.concat_data.series_after(attribute, lag=2, length=length)
+def mean_test(event_list, attribute, lag, length):
+    series = [e.concat_data.series_after(attribute, lag=lag, length=length)
               for e in event_list]
     returns = [s.sum() for s in series]
     print('Mean:', np.mean(returns))
@@ -14,8 +14,8 @@ def mean_test(event_list, attribute, length):
     print('p_value:', p_value)
 
 
-def plot_histogram(event_list, attribute, lag=2, length=20):
-    series = [e.concat_data.series_after(attribute, lag=2, length=length)
+def plot_histogram(event_list, attribute, lag, length):
+    series = [e.concat_data.series_after(attribute, lag=lag, length=length)
               for e in event_list]
     returns = [s.sum() for s in series]
     plt.hist(returns, bins=50, normed=True, alpha=0.6, color='g')
@@ -28,10 +28,9 @@ def plot_histogram(event_list, attribute, lag=2, length=20):
     plt.title(title)
 
 
-def print_summary_wo_outliers(event_list, attribute, lag=2, length=20,
+def print_summary_wo_outliers(event_list, attribute, lag, length,
                               outlier_abs_threshold):
-    attribute, length = 'alpha', 20
-    series = [e.concat_data.series_after(attribute, lag=2, length=length)
+    series = [e.concat_data.series_after(attribute, lag=lag, length=length)
               for e in event_list]
     returns = [s.sum() for s in series]
     print('Full sample')
@@ -46,9 +45,9 @@ def print_summary_wo_outliers(event_list, attribute, lag=2, length=20,
     print(stats.ttest_1samp(wo_outliers, 0)[1])
 
 
-def plot_histogram_wo_outliers(event_list, attribute, lag=2, length=20,
+def plot_histogram_wo_outliers(event_list, attribute, lag, length,
                                outlier_abs_threshold):
-    series = [e.concat_data.series_after(attribute, lag=2, length=length)
+    series = [e.concat_data.series_after(attribute, lag=lag, length=length)
               for e in event_list]
     returns = [s.sum() for s in series
                if abs(s.sum()) < outlier_abs_threshold]
