@@ -8,74 +8,42 @@ from memnews import NewsList
 class NewsEvent(Event):
     DISTANCE_THRESH = 20  # business days
 
-    def alpha_is_greater_than(self, pct):
-        return self._event_day_alpha > pct
-
-    def alpha_is_smaller_than(self, pct):
-        return self._event_day_alpha < pct
-
-    def absolute_alpha_is_greater_than(self, pct):
-        return abs(self._event_day_alpha) > pct
-
-    def absolute_alpha_is_smaller_than(self, pct):
-        return abs(self._event_day_alpha) < pct
-
-    @property
-    def alpha_is_greater_than_miu_plus_2_sigmas(self):
-        mean = self.additional_data['alpha_miu']
-        sigma = self.additional_data['alpha_sigma']
-        return self._event_day_alpha > mean + 2 * sigma
-
-    @property
-    def alpha_is_smaller_than_miu_minus_2_sigmas(self):
-        mean = self.additional_data['alpha_miu']
-        sigma = self.additional_data['alpha_sigma']
-        return self._event_day_alpha < mean - 2 * sigma
-
-    @property
-    def alpha_is_smaller_than_miu_minus_sigma(self):
-        mean = self.additional_data['alpha_miu']
-        sigma = self.additional_data['alpha_sigma']
-        return self._event_day_alpha < mean - sigma
-
-    @property
-    def alpha_is_greater_than_miu_minus_2_sigmas(self):
-        mean, sigma = self._get_alpha_moments()
-        return self._event_day_alpha > mean - 2 * sigma
-
     @property
     def has_relevant_news(self):
         nl = self.concat_data.series_after('news', lag=0, length=1)[0]
-        result = [n for n in nl if n.relevance[self.entity_id]['score'] > 0.3]
-        return bool(result)
+        if isinstance(nl, NewsList):
+            result = [n for n in nl
+                      if n['relevance'][self.entity_id]['score'] > 0.3]
+            return bool(result)
+        return False
 
     @property
     def has_many_news(self):
-        mean = self.additional_data['news_count_miu']
-        sigma = self.additional_data['news_count_sigma']
-        return self._event_day_news_amount > mean + 2 * sigma
+        m = self.additional_data['news_count_miu']
+        s = self.additional_data['news_count_sigma']
+        return self.event_day_news_count > m + 2 * s
 
     @property
     def has_more_news(self):
-        mean = self.additional_data['news_count_miu']
-        sigma = self.additional_data['news_count_sigma']
-        return self._event_day_news_amount > mean + sigma
+        m = self.additional_data['news_count_miu']
+        s = self.additional_data['news_count_sigma']
+        return self.event_day_news_count > m + s
 
     @property
     def has_some_news(self):
-        mean = self.additional_data['news_count_miu']
-        sigma = self.additional_data['news_count_sigma']
-        return self._event_day_news_amount > mean
+        m = self.additional_data['news_count_miu']
+        s = self.additional_data['news_count_sigma']
+        return self.event_day_news_count > m
 
     @property
     def has_few_news(self):
-        mean = self.additional_data['news_count_miu']
-        sigma = self.additional_data['news_count_sigma']
-        return self._event_day_news_amount < mean
+        m = self.additional_data['news_count_miu']
+        s = self.additional_data['news_count_sigma']
+        return self._event_day_news_amount < m
 
     @property
     def has_no_news(self):
-        return self._event_day_news_amount == 0
+        return self.event_day_news_count == 0
 
     @classmethod
     def _calculate_additional_data(cls, data):
@@ -115,10 +83,10 @@ class NewsEvent(Event):
         return len(news_list)
 
     @property
-    def _event_day_alpha(self):
+    def event_day_alpha(self):
         return self.concat_data.series_after('alpha', lag=0, length=1)[0]
 
     @property
-    def _event_day_news_amount(self):
+    def event_day_news_count(self):
         news_list = self.concat_data.series_after('news', lag=0, length=1)[0]
         return self._get_news_list_len(news_list)
