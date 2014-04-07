@@ -8,17 +8,21 @@ class EventDetector:
         self.event = event_class
 
     def run(self, entity_id, entity_data, entity_meta):
-        el = self._create_initial_list(entity_id, entity_data, entity_meta)
+        additional_data = self.event._calculate_additional_data(entity_data)
+        el = self._create_initial_list(entity_id, entity_data, entity_meta,
+                                       additional_data)
         result = EventList()
         for event in el:
             if event.triggers():
                 result.append_event(event)
         return result
 
-    def _create_initial_list(self, entity_id, entity_data, entity_meta):
+    def _create_initial_list(self, entity_id, entity_data, entity_meta,
+                             additional_data):
         el = EventList()
         for d in entity_data.index:
-            e = self.event(entity_id, entity_data, entity_meta, d, el)
+            e = self.event(entity_id, entity_data, entity_meta, d, el,
+                           additional_data)
             el.append_event(e)
         return el
 
@@ -26,18 +30,19 @@ class EventDetector:
 class Event:
 
     def __init__(self, entity_id, entity_price_data, entity_meta_data, date,
-                 event_list):
+                 event_list, additional_data):
         self.entity_id = entity_id
         self._data = entity_price_data
         self.meta_data = entity_meta_data
         self.date = date
+        self.additional_data = additional_data
         self._list = event_list
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         return 'Event for "%s" on %s' % (self.entity_id,
                                          self.date.strftime("%Y-%m-%d"))
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         return str(self)
 
     def triggers(self):
@@ -47,27 +52,33 @@ class Event:
     def concat_data(self):
         return EventConcatData(self)
 
+    @classmethod
+    def _calculate_additional_data(cls, data):
+        raise NotImplementedError
+
 
 class CloseEvents:
 
     def __init__(self, event):
         self.ev = event
 
-    def find_after(self, neighbour_class, days):
-        last_day = self.ev.date + pd.tseries.offsets.BDay(days)
+    def find_after(self, neighbour_class, business_days):
+        last_day = self.ev.date + pd.tseries.offsets.BDay(business_days)
         tmp = [e for e in self.ev._list if self.ev.date < e.date <= last_day]
         result = self._matching_events(tmp, neighbour_class)
         return result
 
-    def find_before(self, neighbour_class, days):
-        first_day = self.ev.date - pd.tseries.offsets.BDay(days)
+    def find_before(self, neighbour_class, business_days):
+        first_day = self.ev.date - pd.tseries.offsets.BDay(business_days)
         tmp = [e for e in self.ev._list if first_day <= e.date < self.ev.date]
         result = self._matching_events(tmp, neighbour_class)
         return result
 
     def _matching_events(self, list_of_events, ncls):
-        result = [ncls(e.entity_id, e._data, e.meta_data, e.date, e._list)
-                  for e in list_of_events]
+        result = list()
+        for e in list_of_events:
+            result.append(ncls(e.entity_id, e._data, e.meta_data, e.date,
+                               e._list, e.additional_data))
         return [e for e in result if e.triggers()]
 
 
@@ -78,23 +89,14 @@ class EventConcatData:
         self._date = event.date
 
     def series_after(self, attribute, lag=1, length=5):
-        start = self._position + lag
-        end = start + length
-        if end > len(self._data[attribute]):
-            return self._data[attribute][start:]
+        start = self._date + pd.tseries.offsets.BDay(lag)
+        end = start + pd.tseries.offsets.BDay(length - 1)
         return self._data[attribute][start:end]
 
     def series_before(self, attribute, lag=1, length=5):
-        end = self._position - lag + 1
-        start = end - length
-        if start < 0:
-            return self._data[attribute][:end]
+        end = self._date - pd.tseries.offsets.BDay(lag)
+        start = end - pd.tseries.offsets.BDay(length - 1)
         return self._data[attribute][start:end]
-
-    @property
-    def _position(self):
-        "gives event day position in data index"
-        return self._data.index.get_loc(self._date)
 
 
 class EventList:
@@ -105,7 +107,7 @@ class EventList:
     def __str__(self):
         return 'EventList with %s events' % len(self)
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         return str(self)
 
     def __iter__(self):
@@ -234,7 +236,7 @@ def get_different_events(minuend_list, subtrahend_list):
     return result
 
 
-def check_event_news_headlines(event, regex):
+def check_event_news_headlines(event, regex):  # pragma: no cover
     news = event.concat_data.series_after('news', lag=0, length=1)[0]
     for n in news:
         if re.search(regex, n['clean_headline']):

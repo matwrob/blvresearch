@@ -8,43 +8,34 @@ from memnews import NewsList
 class NewsEvent(Event):
     DISTANCE_THRESH = 20  # business days
 
-    @property
-    def alpha_is_negative(self):
-        return self._event_day_alpha < 0
+    def alpha_is_greater_than(self, pct):
+        return self._event_day_alpha > pct
 
-    @property
-    def alpha_is_positive(self):
-        return self._event_day_alpha > 0
+    def alpha_is_smaller_than(self, pct):
+        return self._event_day_alpha < pct
 
-    @property
-    def alpha_is_greater_than_2pct(self):
-        return self._event_day_alpha > 0.02
+    def absolute_alpha_is_greater_than(self, pct):
+        return abs(self._event_day_alpha) > pct
+
+    def absolute_alpha_is_smaller_than(self, pct):
+        return abs(self._event_day_alpha) < pct
 
     @property
     def alpha_is_greater_than_miu_plus_2_sigmas(self):
-        mean, sigma = self._get_alpha_moments()
+        mean = self.additional_data['alpha_miu']
+        sigma = self.additional_data['alpha_sigma']
         return self._event_day_alpha > mean + 2 * sigma
 
     @property
-    def absolute_alpha_is_greater_than_2pct(self):
-        return abs(self._event_day_alpha) > 0.02
-
-    @property
-    def alpha_is_smaller_than_minus_2pct(self):
-        return self._event_day_alpha < -0.02
-
-    @property
-    def alpha_is_smaller_than_minus_4pct(self):
-        return self._event_day_alpha < -0.04
-
-    @property
     def alpha_is_smaller_than_miu_minus_2_sigmas(self):
-        mean, sigma = self._get_alpha_moments()
+        mean = self.additional_data['alpha_miu']
+        sigma = self.additional_data['alpha_sigma']
         return self._event_day_alpha < mean - 2 * sigma
 
     @property
     def alpha_is_smaller_than_miu_minus_sigma(self):
-        mean, sigma = self._get_alpha_moments()
+        mean = self.additional_data['alpha_miu']
+        sigma = self.additional_data['alpha_sigma']
         return self._event_day_alpha < mean - sigma
 
     @property
@@ -60,49 +51,65 @@ class NewsEvent(Event):
 
     @property
     def has_many_news(self):
-        mean, sigma = self._get_news_length_moments()
+        mean = self.additional_data['news_count_miu']
+        sigma = self.additional_data['news_count_sigma']
         return self._event_day_news_amount > mean + 2 * sigma
 
     @property
     def has_more_news(self):
-        mean, sigma = self._get_news_length_moments()
+        mean = self.additional_data['news_count_miu']
+        sigma = self.additional_data['news_count_sigma']
         return self._event_day_news_amount > mean + sigma
 
     @property
     def has_some_news(self):
-        mean, sigma = self._get_news_length_moments()
+        mean = self.additional_data['news_count_miu']
+        sigma = self.additional_data['news_count_sigma']
         return self._event_day_news_amount > mean
 
     @property
     def has_few_news(self):
-        mean, sigma = self._get_news_length_moments()
+        mean = self.additional_data['news_count_miu']
+        sigma = self.additional_data['news_count_sigma']
         return self._event_day_news_amount < mean
 
     @property
     def has_no_news(self):
         return self._event_day_news_amount == 0
 
-    def _get_alpha_moments(self):
+    @classmethod
+    def _calculate_additional_data(cls, data):
+        res = dict()
+        res['alpha_miu'], res['alpha_sigma'] = cls._get_alpha_moments(data)
+        res['news_count_miu'], res['news_count_sigma'] = (
+            cls._get_news_count_moments(data)
+        )
+        return res
+
+    @classmethod
+    def _get_alpha_moments(cls, data):
         # year = self.date.year
         # start, end = pd.datetime(year, 1, 1), pd.datetime(year, 12, 31)
         # val = self.concat_data._data['alpha'][start:end]
-        val = self.concat_data._data['alpha']
+        val = data['alpha']
         mean = val.mean()
         sigma = 0 if math.isnan(val.std()) else val.std()
         return mean, sigma
 
-    def _get_news_length_moments(self):
+    @classmethod
+    def _get_news_count_moments(cls, data):
         # year = self.date.year
         # start, end = pd.datetime(year, 1, 1), pd.datetime(year, 12, 31)
         # news = self.concat_data._data['news'][start:end]
-        news = self.concat_data._data['news']
-        val = news.map(self._get_news_list_len)
+        news = data['news']
+        val = news.map(cls._get_news_list_len)
         val = val[val > 0]
         mean = val.mean()
         sigma = 0 if math.isnan(val.std()) else val.std()
         return mean, sigma
 
-    def _get_news_list_len(self, news_list):
+    @classmethod
+    def _get_news_list_len(cls, news_list):
         if not isinstance(news_list, NewsList):
             return 0
         return len(news_list)
