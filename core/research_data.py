@@ -21,7 +21,7 @@ def get_research_data_by_entity(entity_ids, criteria_func,
     secs = [Security(v) for k, v in universe.iterrows()
             if v['factset_entity_id'] in entity_ids
             and criteria_func(v)
-            and daycount[k] > 12]
+            and daycount[v['factset_entity_id']] > 12]
     return _get_prices_and_news(secs, start_date, end_date)
 
 
@@ -38,16 +38,17 @@ def get_research_data_by_country(list_of_countries, criteria_func,
 
 
 def _get_prices_and_news(securities, start_date, end_date):
-    prices = get_many(securities, start_date, end_date)
+    topcountry_model = get_many(securities, start_date, end_date)
     news = NewsList.get_by_entity([s.factset_entity_id for s in securities],
                                   start_date, end_date)
     news = news.split_by_entity()
-    return _join_prices_and_news(prices, news)
+    return _join_prices_and_news(topcountry_model, news)
 
 
 def _join_prices_and_news(prices, news):
     result = dict()
     for sec, price_data in prices.items():
+        price_data['abs_ret'] = price_data['rel_ret'] + price_data['bench']
         if sec.factset_entity_id in news.keys():
             date_index = sec.exchangeobj.add_exact_time(price_data.index)
             price_data.index = date_index
