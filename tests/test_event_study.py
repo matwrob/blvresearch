@@ -17,7 +17,7 @@ class MockEvent1(Event):
             return True
 
     @classmethod
-    def _calculate_additional_data(cls):
+    def _calculate_additional_data(cls, data):
         return dict()
 
 
@@ -28,7 +28,7 @@ class MockEvent2(Event):
             return True
 
     @classmethod
-    def _calculate_additional_data(cls):
+    def _calculate_additional_data(cls, data):
         return dict()
 
 class TestEvent(unittest.TestCase):
