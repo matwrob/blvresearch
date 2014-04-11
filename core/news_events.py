@@ -9,6 +9,15 @@ class NewsEvent(Event):
     DISTANCE_THRESH = 20  # business days
 
     @property
+    def event_day_alpha(self):
+        return self.concat_data.series_after('alpha', lag=0, length=1)[0]
+
+    @property
+    def event_day_news_count(self):
+        news_list = self.concat_data.series_after('news', lag=0, length=1)[0]
+        return self._get_news_list_len(news_list)
+
+    @property
     def has_relevant_news(self):
         nl = self.concat_data.series_after('news', lag=0, length=1)[0]
         if isinstance(nl, NewsList):
@@ -16,34 +25,6 @@ class NewsEvent(Event):
                       if n['relevance'][self.entity_id]['score'] > 0.3]
             return bool(result)
         return False
-
-    @property
-    def has_many_news(self):
-        m = self.additional_data['news_count_miu']
-        s = self.additional_data['news_count_sigma']
-        return self.event_day_news_count > m + 2 * s
-
-    @property
-    def has_more_news(self):
-        m = self.additional_data['news_count_miu']
-        s = self.additional_data['news_count_sigma']
-        return self.event_day_news_count > m + s
-
-    @property
-    def has_some_news(self):
-        m = self.additional_data['news_count_miu']
-        s = self.additional_data['news_count_sigma']
-        return self.event_day_news_count > m
-
-    @property
-    def has_few_news(self):
-        m = self.additional_data['news_count_miu']
-        s = self.additional_data['news_count_sigma']
-        return self._event_day_news_amount < m
-
-    @property
-    def has_no_news(self):
-        return self.event_day_news_count == 0
 
     @classmethod
     def _calculate_additional_data(cls, data):
@@ -81,12 +62,3 @@ class NewsEvent(Event):
         if not isinstance(news_list, NewsList):
             return 0
         return len(news_list)
-
-    @property
-    def event_day_alpha(self):
-        return self.concat_data.series_after('alpha', lag=0, length=1)[0]
-
-    @property
-    def event_day_news_count(self):
-        news_list = self.concat_data.series_after('news', lag=0, length=1)[0]
-        return self._get_news_list_len(news_list)
