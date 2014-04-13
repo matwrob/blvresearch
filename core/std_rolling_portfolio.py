@@ -29,20 +29,21 @@ import pandas as pd
 
 class JegadeeshReturns:
 
-    def __init__(research_data, type_of_return='abs_ret', no_of_quantiles=3):
+    def __init__(self, research_data, type_of_return='abs_ret',
+                 no_of_quantiles=3):
         self.rd = research_data
         self.type = type_of_return
         self.quant = no_of_quantiles
 
     def get_winners_returns(self, data_freq, test_per, hold_per):
         returns = self._get_initial_returns(data_freq)
-        winners = get_winners(returns, test_per, self.quant)
+        winners = self._get_winners(returns, test_per, self.quant)
         positions = get_portfolio_positions(returns, winners, hold_per)
         return get_mean_returns(returns, positions, hold_per)
 
     def get_losers_returns(self, data_freq, test_per, hold_per):
         returns = self._get_initial_returns(data_freq)
-        losers = get_losers(returns, test_per, self.quant)
+        losers = self._get_losers(returns, test_per, self.quant)
         positions = get_portfolio_positions(returns, losers, hold_per)
         return get_mean_returns(returns, positions, hold_per)
 
@@ -54,6 +55,12 @@ class JegadeeshReturns:
     def _get_initial_returns(self, freq):
         result = get_dataframe_of_returns(self.rd, self.type)
         return result.resample(freq, how=sum)
+
+    def _get_winners(self, df_of_returns, test_per, no_of_quantiles):
+        return get_winners(df_of_returns, test_per, no_of_quantiles)
+
+    def _get_losers(self, df_of_returns, test_per, no_of_quantiles):
+        return get_losers(df_of_returns, test_per, no_of_quantiles)
 
 
 def get_dataframe_of_returns(research_data, type_of_return='abs_ret'):
@@ -116,7 +123,7 @@ def get_portfolio_positions(df_of_returns, entities, hold_per):
                           columns=df_of_returns.columns)
     for i, date in enumerate(result.index):
         result[i + 1: i + hold_per + 1][entities[date]] = True
-    return result[1:]
+    return result[1:]  # removes day without holdings
 
 
 def get_mean_returns(df_of_returns, mapping, hold_per):
