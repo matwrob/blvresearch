@@ -37,9 +37,6 @@ class NewsEvent(Event):
 
     @classmethod
     def _get_alpha_moments(cls, data):
-        # year = self.date.year
-        # start, end = pd.datetime(year, 1, 1), pd.datetime(year, 12, 31)
-        # val = self.concat_data._data['alpha'][start:end]
         val = data['alpha']
         mean = val.mean()
         sigma = 0 if math.isnan(val.std()) else val.std()
@@ -47,9 +44,6 @@ class NewsEvent(Event):
 
     @classmethod
     def _get_news_count_moments(cls, data):
-        # year = self.date.year
-        # start, end = pd.datetime(year, 1, 1), pd.datetime(year, 12, 31)
-        # news = self.concat_data._data['news'][start:end]
         news = data['news']
         val = news.map(cls._get_news_list_len)
         val = val[val > 0]

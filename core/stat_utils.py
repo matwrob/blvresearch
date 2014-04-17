@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import scipy.stats as stats
+import pandas as pd
 import numpy as np
 
 
@@ -7,11 +8,30 @@ def mean_test(event_list, attribute, lag, length):
     series = [e.concat_data.series_after(attribute, lag=lag, length=length)
               for e in event_list]
     returns = [s.sum() for s in series]
-    print('Mean:', np.mean(returns))
-    # t-test
-    # null hypothesis: expected value = 0
-    t_statistic, p_value = stats.ttest_1samp(returns, 0)
+    miu = np.mean(returns) * 100
+    t_stat, p_value = stats.ttest_1samp(returns, 0)  # H0: E[X] = 0
+    return(round(miu, 3), p_value)
+
+
+def tabular_results(list_of_event_lists, attribute, days_combinations):
+    result = pd.DataFrame(index=[el.description for el in list_of_event_lists],
+                          columns=[c for c in days_combinations])
+    for el in list_of_event_lists:
+        for c in days_combinations:
+            result.loc[el.description][c] = mean_test(el, attribute,
+                                                      lag=c[0], length=c[1])
+    return result
+
+
+def print_mean_test(event_list, attribute, lag, length):
+    series = [e.concat_data.series_after(attribute, lag=lag, length=length)
+              for e in event_list]
+    returns = [s.sum() for s in series]
+    miu = np.mean(returns) * 100
+    t_stat, p_value = stats.ttest_1samp(returns, 0)  # H0: E[X] = 0
+    print('Mean: ', round(miu, 3))
     print('p_value:', p_value)
+    print('t_stat:', t_stat)
 
 
 def plot_histogram(event_list, attribute, lag, length):

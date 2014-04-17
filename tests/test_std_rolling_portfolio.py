@@ -38,6 +38,15 @@ class TestGetDataFrameOfReturns(unittest.TestCase):
 
 class TestGetSortedReturns(unittest.TestCase):
 
+    def test_if_sorted(self):
+        df = get_dataframe_of_returns(PRICE_DATA)
+        resampled = df.resample('M', how=sum)
+        result = get_sorted_returns(resampled, test_per=1)
+        for day, series in result.items():
+            is_ordered = [series[i] <= series[i+1]
+                          for i in range(len(series)-1)]
+            self.assertTrue(is_ordered)
+
     def test_get_1_month(self):
         df = get_dataframe_of_returns(PRICE_DATA)
         resampled = df.resample('M', how=sum)

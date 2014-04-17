@@ -124,6 +124,10 @@ class EventList:
     def __len__(self):
         return len(self._events)
 
+    @property
+    def description(self):
+        return self[0].description
+
     def append_event(self, event):
         self._events.append(event)
 
