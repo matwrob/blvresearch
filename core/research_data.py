@@ -113,5 +113,5 @@ def get_awp_daycounts():
             for r in NEWSDB.execute(query, (pd.datetime(2011, 1, 1),))}
 
 
-def redis():
-    return StringNamespace('memnews:entity_security_transl')
+# def redis():
+#     return StringNamespace('memnews:entity_security_transl')
