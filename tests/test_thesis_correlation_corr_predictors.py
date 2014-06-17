@@ -28,7 +28,6 @@ INDEX = pd.DatetimeIndex(start='2013-06-01',
                          freq='B')
 NEWS1 = {'entities': ['entity1', 'entity2']}
 NEWS2 = {'entities': ['entity1', 'entity3']}
-
 MOCK_ENTITY_1 = pd.DataFrame(
     pd.Series(data=[NewsList([NEWS1, NEWS2])] * len(INDEX),
               index=INDEX,
@@ -53,9 +52,12 @@ MOCK_DATA = {
 
 class TestIfMockNewsListCorrect(unittest.TestCase):
 
-	def test_len(self):
-		self.assertEqual(len(NewsList([NEWS1])), 1)
-		self.assertEqual(len(NewsList([NEWS1, NEWS2])), 2)
+    def test_len(self):
+        self.assertEqual(len(NewsList([NEWS1])), 1)
+        self.assertEqual(len(NewsList([NEWS1, NEWS2])), 2)
+
+    def test_type(self):
+        self.assertIsInstance(NewsList([NEWS1]), NewsList)
 
 
 class TestGetCoOccWithOtherEntities(unittest.TestCase):
@@ -101,29 +103,17 @@ class TestGetRelativeCoOccWithOtherEntities(unittest.TestCase):
 
     def test_get_daily(self):
         res = get_relative_coocc_with_other_entities('entity1', MOCK_DATA)
-        self.assertAlmostEqual(res['entity2']['2013-06-03'],
-                               0.333333,
-                               places=6)
-        self.assertAlmostEqual(res['entity3']['2013-06-03'],
-                               0.333333,
-                               places=6)
+        self.assertEqual(res['entity2']['2013-06-03'], 0.5)
+        self.assertEqual(res['entity3']['2013-06-03'], 0.5)
 
     def test_get_weekly(self):
         res = get_relative_coocc_with_other_entities('entity1', MOCK_DATA,
                                                      freq='W-FRI')
-        self.assertAlmostEqual(res['entity2']['2013-06-07'],
-                               0.333333,
-                               places=6)
-        self.assertAlmostEqual(res['entity3']['2013-06-07'],
-                               0.333333,
-                               places=6)
+        self.assertEqual(res['entity2']['2013-06-07'], 0.5)
+        self.assertEqual(res['entity3']['2013-06-07'], 0.5)
 
     def test_get_monthly(self):
         res = get_relative_coocc_with_other_entities('entity1', MOCK_DATA,
                                                      freq='M')
-        self.assertAlmostEqual(res['entity2']['2013-06-30'],
-                               0.333333,
-                               places=6)
-        self.assertAlmostEqual(res['entity3']['2013-06-30'],
-                               0.333333,
-                               places=6)
+        self.assertEqual(res['entity2']['2013-06-30'], 0.5)
+        self.assertEqual(res['entity3']['2013-06-30'], 0.5)
