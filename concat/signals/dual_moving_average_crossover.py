@@ -47,3 +47,7 @@ def plot_with_signals(data, signals):
     ax1.plot(sell.index, cum_alpha[sell.index], 'v', markersize=20, color='r')
     fig.set_size_inches(28, 35)
     plt.show()
+
+
+def signals_reinforced_support():
+    raise Exception

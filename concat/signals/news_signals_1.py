@@ -1,13 +1,11 @@
-import datetime as dt
 import pandas as pd
 
+from blvresearch.concat.signals.utils import remove_consecutive_values
 from concat_overlord.standard import MeanSigma
 from memnews.core import NewsList
 
-TODAY = dt.datetime.today()
 
-
-def get_suprises(data, entity_id):
+def get(data, entity_id):
     result = pd.Series(index=data.index)
     days_to_check = _get_days_to_check(data, entity_id)
     for i, day in enumerate(days_to_check.index):
@@ -15,17 +13,10 @@ def get_suprises(data, entity_id):
             result[day] = True
         elif _is_negative_suprise(data, day):
             result[day] = False
-    return _remove_consecutive_values(result)
+    return remove_consecutive_values(result)
 
 
-def _remove_consecutive_values(series):
-    result = series.dropna()
-    result[result.shift(1) == result] = None
-    result = result.dropna()
-    return result
-
-
-def _get_days_to_check(df, entity_id):
+def _get_days_to_check(entity_id, df):
     result = pd.Series(index=df.index)
     ms = MeanSigma(df['alpha'])
     for date, row in df.iterrows():
