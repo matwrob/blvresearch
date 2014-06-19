@@ -1,53 +1,54 @@
-import matplotlib.pyplot as plt
+"""
+OVERVIEW:
+This strategy uses two moving averages of different periods, short and long
+(fast and slow), to indicate a trend's direction. When the fast moving average
+(short) crosses above the slow moving average (long), the trend is deemed to
+have become bullish and represents a potential buying opportunity.
+The system seeks to exit (sell) an open position when the fast moving average
+crosses below the slow moving average.
+
+PARAMETER DESCRIPTION:
+The Moving Average is the average price of a stock over a given period.
+For example, to calculate a 50 day Simple Moving Average (SMA), add the last
+50 closing price values and divide the sum by 50. There are other, more complex
+ways to calculate a Moving Average, but the Simple Moving Average is still the
+most commonly used. Typical trend values look out over 20 and 50 days although
+50 and 200 days are also frequently used.
+
+Source: https://eresearch.fidelity.com/
+
+###############################################################################
+
+Calculating Moving Averages based on daily alphas increases slightly the number
+of signals generated on average across entities.
+Average returns of winner entities and loser entities are greater in absolute
+terms (0.3365 vs 0.2994 and -0.235 vs -0.1706)
+
+"""
+from itertools import groupby
 import pandas as pd
 
-
-LONG_WINDOW = 30
-SHORT_WINDOW = 5
-CONFIRMATION_WINDOW = 5
-
-
-def get_signals(data):
-    s = pd.ewma(data['alpha'], span=SHORT_WINDOW)
-    l = pd.ewma(data['alpha'], span=LONG_WINDOW)
-    df = pd.DataFrame(s > l, columns=['s>l'])
-    df['block'] = (df['s>l'].shift(1) != df['s>l']).astype(int).cumsum()
-    return _create_series_of_signals(df)
+from blvresearch.concat.signals.utils import (
+    remove_consecutive_values
+)
 
 
-def _create_series_of_signals(df):
-    result = pd.Series(index=df.index)
-    for k, v in df.groupby('block'):
-        if len(v) > CONFIRMATION_WINDOW:
-            if v['s>l'][0]:
-                result[v.index[CONFIRMATION_WINDOW - 1]] = True
-            else:
-                result[v.index[CONFIRMATION_WINDOW - 1]] = False
-    result = _remove_consecutive_values(result)
+def get_signals(data, long_window, short_window, confirmation_window):
+    returns = data['alpha'].cumsum()
+    _short = pd.ewma(returns, span=short_window)
+    _long = pd.ewma(returns, span=long_window)
+    result = _short > _long
+    result = _adjust_series_of_signals(result, confirmation_window)
+    return remove_consecutive_values(result)
+
+
+def _adjust_series_of_signals(series_of_signals, confirmation_window):
+    list_of_tuples = [(k, v) for k, v in series_of_signals.items()]
+    list_of_tuples.sort(key=lambda x: x[0])
+    result = pd.Series(index=series_of_signals.index)
+    for signal, group in groupby(list_of_tuples, key=lambda x: x[1]):
+        tuples = list(group)
+        if len(tuples) > confirmation_window:
+            signal_day = tuples[confirmation_window - 1][0]
+            result[signal_day] = True if signal == True else False
     return result
-
-
-def _remove_consecutive_values(series):
-    result = series.dropna()
-    result[result.shift(1) == result] = None
-    result = result.dropna()
-    return result
-
-
-def plot_with_signals(data, signals):
-    fig = plt.figure()
-    ax1 = fig.add_subplot(211,  ylabel='ALPHA')
-    cum_alpha = data['alpha'].cumsum()
-    cum_alpha.plot(ax=ax1, color='b', lw=2.)
-
-    buy = signals[signals == True]
-    sell = signals[signals == False]
-
-    ax1.plot(buy.index, cum_alpha[buy.index], '^', markersize=20, color='g')
-    ax1.plot(sell.index, cum_alpha[sell.index], 'v', markersize=20, color='r')
-    fig.set_size_inches(28, 35)
-    plt.show()
-
-
-def signals_reinforced_support():
-    raise Exception
