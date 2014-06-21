@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import unittest
 
-from blvresearch.concat.signals.rsi_agita import (
+from blvresearch.concat.signals.price_based.rsi_agita import (
     get_signals
 )
 

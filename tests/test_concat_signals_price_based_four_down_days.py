@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import unittest
 
-from blvresearch.concat.signals.four_down_days import (
+from blvresearch.concat.signals.price_based.four_down_days import (
     get_signals
 )
 

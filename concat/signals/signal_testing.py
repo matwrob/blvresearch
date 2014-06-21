@@ -24,7 +24,7 @@ return (because we sold on Tuesday at Monday's CP)
 import pandas as pd
 
 from blvresearch.concat.signals.utils import (
-    get_sp500_return
+    get_benchmark_return
 )
 
 
@@ -34,7 +34,7 @@ class SignalReport:
 
     TEMPLATE = ("Strategy generated profit for %s companies (%s)\n" +
                 "Strategy generated loss for %s companies (%s)\n" +
-                "Strategy outperformed SP500 for %s companies (%s)\n" +
+                "Strategy outperformed benchmark for %s companies (%s)\n" +
                 "Average number of signals per entity: %s\n" +
                 "Average return of winners was %s\n" +
                 "Average return of losers was %s\n" +
@@ -122,7 +122,7 @@ class StrategyCharacteristics:
 
     def __init__(self, data):
         self.d = data
-        self.benchmark = get_sp500_return()
+        self.benchmark = get_benchmark_return()
 
     @property
     def all_entities(self):

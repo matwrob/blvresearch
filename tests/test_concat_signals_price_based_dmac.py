@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import unittest
 
-from blvresearch.concat.signals.dual_moving_average_crossover import (
+from blvresearch.concat.signals.price_based.dmac import (
     get_signals
 )
 

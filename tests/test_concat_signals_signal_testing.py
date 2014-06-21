@@ -154,7 +154,7 @@ MOCK_DATA = {
                           '2013-01-30': -0.042928286256102254}})
 }
 
-with patch('blvresearch.concat.signals.signal_testing.get_sp500_return',
+with patch('blvresearch.concat.signals.signal_testing.get_benchmark_return',
            return_value=0.3):
     MOCK_CHARS = StrategyCharacteristics(MOCK_DATA)
 
@@ -260,7 +260,7 @@ class TestStrategyCharacteristics(unittest.TestCase):
 class TestSignalReport(unittest.TestCase):
 
     def test_get(self):
-        with patch('blvresearch.concat.signals.utils.get_sp500_return',
+        with patch('blvresearch.concat.signals.utils.get_benchmark_return',
                    return_value=0.3):
             with patch.object(SignalReport, '_get_data',
                               return_value=MOCK_DATA):
@@ -268,7 +268,7 @@ class TestSignalReport(unittest.TestCase):
                 res = sr.get()
         exp = ("Strategy generated profit for 3 companies (0.75)\n" +
                "Strategy generated loss for 1 companies (0.25)\n" +
-               "Strategy outperformed SP500 for 2 companies (0.5)\n" +
+               "Strategy outperformed benchmark for 2 companies (0.5)\n" +
                "Average number of signals per entity: 16.5\n" +
                "Average return of winners was 0.3086\n" +
                "Average return of losers was -0.049\n" +

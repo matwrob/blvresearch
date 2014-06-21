@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import unittest
 
-from blvresearch.concat.signals.moving_average import (
+from blvresearch.concat.signals.price_based.moving_average import (
     get_signals
 )
 

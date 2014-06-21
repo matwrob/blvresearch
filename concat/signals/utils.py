@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import pandas.io.data as web
 import datetime as dt
 import pandas as pd
@@ -15,11 +16,11 @@ def remove_consecutive_values(series):
     return result.dropna()
 
 
-def get_sp500_return():  # pragma: no cover
+def get_benchmark_return(code="^SSMI"):  # pragma: no cover
     """Adj Close = close price adjusted for dividends and splits
 
     """
-    sp500 = web.DataReader(name="^GSPC",
+    sp500 = web.DataReader(name=code,
                            data_source="yahoo",
                            start=START,
                            end=YESTERDAY)
