@@ -4,7 +4,8 @@ import unittest
 from unittest.mock import patch
 
 from blvresearch.thesis.correlation.corr_predictors import (
-    get_coocc_with_other_entities, get_relative_coocc_with_other_entities,
+    get_absolute_co_occurrence,
+    get_relative_co_occurrence,
     _get_news_count
 )
 from memnews.core import NewsList
@@ -61,17 +62,17 @@ class TestIfMockNewsListCorrect(unittest.TestCase):
 class TestGetCoOccWithOtherEntities(unittest.TestCase):
 
     def test_get_daily(self):
-        res = get_coocc_with_other_entities('entity1', MOCK_DATA)
+        res = get_absolute_co_occurrence('entity1', MOCK_DATA)
         self.assertEqual(res['entity2']['2013-06-03'], 1)
         self.assertEqual(res['entity3']['2013-06-03'], 1)
 
     def test_get_weekly(self):
-        res = get_coocc_with_other_entities('entity1', MOCK_DATA, freq='W-FRI')
+        res = get_absolute_co_occurrence('entity1', MOCK_DATA, freq='W-FRI')
         self.assertEqual(res['entity2']['2013-06-07'], 5)
         self.assertEqual(res['entity3']['2013-06-07'], 5)
 
     def test_get_monthly(self):
-        res = get_coocc_with_other_entities('entity1', MOCK_DATA, freq='M')
+        res = get_absolute_co_occurrence('entity1', MOCK_DATA, freq='M')
         self.assertEqual(res['entity2']['2013-06-30'], 20)
         self.assertEqual(res['entity3']['2013-06-30'], 20)
 
@@ -100,7 +101,7 @@ class TestGetNewsCount(unittest.TestCase):
 class TestGetRelativeCoOccWithOtherEntities(unittest.TestCase):
 
     def test_get_daily(self):
-        res = get_relative_coocc_with_other_entities('entity1', MOCK_DATA)
+        res = get_relative_co_occurrence('entity1', MOCK_DATA)
         self.assertAlmostEqual(res['entity2']['2013-06-03'],
                                0.333333,
                                places=6)
@@ -109,7 +110,7 @@ class TestGetRelativeCoOccWithOtherEntities(unittest.TestCase):
                                places=6)
 
     def test_get_weekly(self):
-        res = get_relative_coocc_with_other_entities('entity1', MOCK_DATA,
+        res = get_relative_co_occurrence('entity1', MOCK_DATA,
                                                      freq='W-FRI')
         self.assertAlmostEqual(res['entity2']['2013-06-07'],
                                0.333333,
@@ -119,7 +120,7 @@ class TestGetRelativeCoOccWithOtherEntities(unittest.TestCase):
                                places=6)
 
     def test_get_monthly(self):
-        res = get_relative_coocc_with_other_entities('entity1', MOCK_DATA,
+        res = get_relative_co_occurrence('entity1', MOCK_DATA,
                                                      freq='M')
         self.assertAlmostEqual(res['entity2']['2013-06-30'],
                                0.333333,
