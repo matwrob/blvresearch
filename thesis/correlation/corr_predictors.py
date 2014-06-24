@@ -3,7 +3,7 @@ import pandas as pd
 from memnews.core import NewsList
 
 
-def get_coocc_with_other_entities(entity_id, data, freq='D'):
+def get_absolute_co_occurrence(entity_id, data, freq='D'):
     other_entities = list(set(data.keys()) - set([entity_id]))
     entity_data = data[entity_id]
     result = pd.DataFrame(data=0,
@@ -18,8 +18,8 @@ def get_coocc_with_other_entities(entity_id, data, freq='D'):
     return result.resample(freq, how=sum)
 
 
-def get_relative_coocc_with_other_entities(entity_id, data, freq='D'):
-    result = get_coocc_with_other_entities(entity_id, data, freq)
+def get_relative_co_occurrence(entity_id, data, freq='D'):
+    result = get_absolute_co_occurrence(entity_id, data, freq)
     news_count = _get_news_count(data, freq)
     result = _calculate_relative_occurrence(entity_id, result, news_count)
     return result
