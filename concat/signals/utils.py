@@ -1,4 +1,4 @@
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import pandas.io.data as web
 import datetime as dt
 import pandas as pd
@@ -20,11 +20,11 @@ def get_benchmark_return(code="^SSMI"):  # pragma: no cover
     """Adj Close = close price adjusted for dividends and splits
 
     """
-    sp500 = web.DataReader(name=code,
+    bench = web.DataReader(name=code,
                            data_source="yahoo",
                            start=START,
                            end=YESTERDAY)
-    result = to_log_returns(sp500['Adj Close'])
+    result = to_log_returns(bench['Adj Close'])
     return result.sum()
 
 

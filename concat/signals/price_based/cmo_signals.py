@@ -42,16 +42,15 @@ def get_signals(data, periods):
 
 
 def logic(x):
-    if x <= -0.5:
+    if x <= BUY_THRESHOLD / 100:
         return True
-    elif x >= 0.5:
+    elif x >= SELL_THRESHOLD / 100:
         return False
 
 
 def _adjust_series_of_signals(series_of_signals):
     list_of_tuples = [(k, v) for k, v in series_of_signals.items()]
     list_of_tuples.sort(key=lambda x: x[0])
-
     result = pd.Series(index=series_of_signals.index)
     for signal, group in groupby(list_of_tuples, key=lambda x: x[1]):
         tuples = list(group)
