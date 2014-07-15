@@ -28,6 +28,9 @@ terms (0.3365 vs 0.2994 and -0.235 vs -0.1706)
 from itertools import groupby
 import pandas as pd
 
+from blvresearch.concat.signals.price_based.moving_average import (
+    adjust_series_of_signals
+)
 from blvresearch.concat.signals.utils import (
     remove_consecutive_values
 )
@@ -38,17 +41,5 @@ def get_signals(data, long_window, short_window, confirmation_window):
     _short = pd.ewma(returns, span=short_window)
     _long = pd.ewma(returns, span=long_window)
     result = _short > _long
-    result = _adjust_series_of_signals(result, confirmation_window)
+    result = adjust_series_of_signals(result, confirmation_window)
     return remove_consecutive_values(result)
-
-
-def _adjust_series_of_signals(series_of_signals, confirmation_window):
-    list_of_tuples = [(k, v) for k, v in series_of_signals.items()]
-    list_of_tuples.sort(key=lambda x: x[0])
-    result = pd.Series(index=series_of_signals.index)
-    for signal, group in groupby(list_of_tuples, key=lambda x: x[1]):
-        tuples = list(group)
-        if len(tuples) > confirmation_window:
-            signal_day = tuples[confirmation_window - 1][0]
-            result[signal_day] = True if signal == True else False
-    return result

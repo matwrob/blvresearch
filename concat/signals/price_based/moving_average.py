@@ -32,11 +32,16 @@ def get_signals(data, window, confirmation_window):
     returns = data['alpha'].cumsum()
     avg = pd.ewma(returns, span=window)
     result = returns > avg
-    result = _adjust_series_of_signals(result, confirmation_window)
+    result = adjust_series_of_signals(result, confirmation_window)
     return remove_consecutive_values(result)
 
 
-def _adjust_series_of_signals(series_of_signals, confirmation_window):
+def adjust_series_of_signals(series_of_signals, confirmation_window):
+    """adjusts raw signals by checking if there are X consecutive signals of
+    the same type; if yes, the Xth day is the signal day, otherwise there is no
+    signal
+
+    """
     list_of_tuples = [(k, v) for k, v in series_of_signals.items()]
     list_of_tuples.sort(key=lambda x: x[0])
     result = pd.Series(index=series_of_signals.index)

@@ -1,13 +1,15 @@
 """
 OVERVIEW:
-Simple strategy based on news.
+First identifies important events, i.e.
+(1) relevant news need to exist
+(2) alpha needs to exceed expected alpha by 1 standard deviation
 
-First identifies important events by considering alpha and existence of
-relevant news on a given day.
-Alpha needs to exceed mean by 1 sigma in absolute terms.
+    Remark: alpha moments are calculated based on previous 6 months
 
 Next for each of these days:
-(1) checks what was the return on that day & invests accordingly
+(3) checks what was the return on that day & invests accordingly,
+    i.e. if alpha was positive => buy,
+         if alpha was negative => sell
 
 """
 import pandas as pd
