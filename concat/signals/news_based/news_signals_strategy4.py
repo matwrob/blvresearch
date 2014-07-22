@@ -32,37 +32,38 @@ FIRST_LOC = (8 +  # CMO takes 9 days to generate a signal hence first 9 days
 LAST_LOC = -DAYS_AFTER
 
 
-def get_signals(data):
-    days_to_check = get_days_to_check(data, FIRST_LOC, LAST_LOC)
+def get_signals(days_to_check, returns, first_loc, last_loc):
+    first_day = returns.index[first_loc + FIRST_LOC]
+    last_day = returns.index[last_loc + LAST_LOC]
 
-    cmo_signals = get_cmo_signals(data, periods=9)
-    cmo_signals = cmo_signals.reindex(data.index)
+    cmo_signals = get_cmo_signals(returns, periods=9)
+    cmo_signals = cmo_signals.reindex(returns.index)
 
-    result = pd.Series(index=data.index)
-    for date in days_to_check.index:
-        loc = data.index.get_loc(date)
-        signal_day = data.index[loc + DAYS_AFTER]
+    result = pd.Series(index=returns.index)
+    for date in days_to_check[first_day:last_day].index:
+        loc = returns.index.get_loc(date)
+        signal_day = returns.index[loc + DAYS_AFTER]
         if ((cmo_signals[loc - 5:loc + 1 + DAYS_AFTER] == False).any() and
-            _is_negative_suprise(data, date)):
+            _is_negative_suprise(returns, date)):
             result[signal_day] = False
         elif ((cmo_signals[loc - 5:loc + 1 + DAYS_AFTER] == True).any() and
-              _is_positive_suprise(data, date)):
+              _is_positive_suprise(returns, date)):
             result[signal_day] = True
     return remove_consecutive_values(result)
 
 
-def _is_negative_suprise(df, date):
-    loc = df.index.get_loc(date)
-    if (df['alpha'][date] < 0 and
-        df['alpha'][loc + 1:loc + 1 + DAYS_AFTER].sum() < 0):
+def _is_negative_suprise(returns, date):
+    loc = returns.index.get_loc(date)
+    if (returns[date] < 0 and
+        returns[loc + 1:loc + 1 + DAYS_AFTER].sum() < 0):
         return True
     return False
 
 
-def _is_positive_suprise(df, date):
-    loc = df.index.get_loc(date)
-    if (df['alpha'][date] > 0 and
-        df['alpha'][loc + 1:loc + 1 + DAYS_AFTER].sum() > 0):
+def _is_positive_suprise(returns, date):
+    loc = returns.index.get_loc(date)
+    if (returns[date] > 0 and
+        returns[loc + 1:loc + 1 + DAYS_AFTER].sum() > 0):
         return True
     return False
 
@@ -74,8 +75,7 @@ def func(x):
         return 1
 
 
-def get_cmo_signals(data, periods):
-    returns = data['alpha']
+def get_cmo_signals(returns, periods):
     cmos = _calculate_cmo_values(returns, periods)
     result = cmos.dropna().map(_cmo_logic)
     result = _adjust_series_of_signals(result)

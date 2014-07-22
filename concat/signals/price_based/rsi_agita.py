@@ -47,14 +47,13 @@ from blvresearch.concat.signals.utils import (
 )
 
 
-def get_signals(data, periods, buy_thrsh, sell_thrsh, mean_type='exp'):
+def get_rsi_signals(data, periods, buy_thrsh, sell_thrsh, mean_type='exp'):
     def _logic(x):
         if x < buy_thrsh:
             return True
         if x > sell_thrsh:
             return False
-    returns = data['alpha']
-    rsi = _calculate_rsi(returns, periods, mean_type)
+    rsi = _calculate_rsi(data['alpha'], periods, mean_type)
     result = pd.Series(rsi.map(_logic))
     return remove_consecutive_values(result)
 
@@ -108,10 +107,11 @@ downtrends may occur, therefore it is wise to use this
 strategy across multiple stocks.\n\n\n
 
 For all trading strategies, tha past performance does
-not guarantee future results."""
+not guarantee future results.
+"""
 
 
-def get_description(signal, periods, buy_thrsh, sell_thrsh):
+def get_rsi_descr(signal, periods, buy_thrsh, sell_thrsh):
     if signal == True:
         result = DESCRIPTION_BUY % (periods, buy_thrsh)
     elif signal == False:
