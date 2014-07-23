@@ -3,7 +3,7 @@ import numpy as np
 import unittest
 
 from blvresearch.concat.signals.price_based.four_down_days import (
-    get_signals
+    get_4down_signals
 )
 
 PATH = 'blvresearch/tests/mock_ubs_data/ubs_alpha.csv'
@@ -14,7 +14,7 @@ MOCK_DATA = {'alpha': pd.Series.from_csv(PATH)}
 class TestGetSignals(unittest.TestCase):
 
     def test_get1(self):
-        res = get_signals(MOCK_DATA, down_days=4, up_days=2)
+        res = get_4down_signals(MOCK_DATA, down_days=4, up_days=2)
         exp = pd.Series(
             {'2012-06-22': False,
              '2012-07-06': True,
@@ -56,7 +56,7 @@ class TestGetSignals(unittest.TestCase):
         np.testing.assert_array_equal(res.dropna(), exp)
 
     def test_get2(self):
-        res = get_signals(MOCK_DATA, down_days=6, up_days=3)
+        res = get_4down_signals(MOCK_DATA, down_days=6, up_days=3)
         exp = pd.Series(
            {'2012-07-10': True,
             '2012-07-25': False,

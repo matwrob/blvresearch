@@ -16,14 +16,6 @@ most commonly used. Typical trend values look out over 20 and 50 days although
 50 and 200 days are also frequently used.
 
 Source: https://eresearch.fidelity.com/
-
-###############################################################################
-
-Calculating Moving Averages based on daily alphas increases slightly the number
-of signals generated on average across entities.
-Average returns of winner entities and loser entities are greater in absolute
-terms (0.3365 vs 0.2994 and -0.235 vs -0.1706)
-
 """
 from itertools import groupby
 import pandas as pd
@@ -35,15 +27,6 @@ from blvresearch.concat.signals.utils import (
     remove_consecutive_values
 )
 from blvutils.finance import to_prices
-
-
-def get_dmac_signals(data, long_window, short_window, confirmation_window):
-    prices = to_prices(data['abs_ret'], set_first_to_na=True)
-    _short = pd.ewma(prices, span=short_window)
-    _long = pd.ewma(prices, span=long_window)
-    result = _short > _long
-    result = adjust_series_of_signals(result, confirmation_window)
-    return remove_consecutive_values(result)
 
 
 DESCRIPTION_BUY = """
@@ -75,7 +58,17 @@ not guarantee future results.
 """
 
 
-def get_dmac_descr(signal, confirmation_window, short_window, long_window):
+def get_dmac_signals(data, long_window, short_window, confirmation_window):
+    prices = to_prices(data['abs_ret'], set_first_to_na=True)
+    _short = pd.ewma(prices, span=short_window)
+    _long = pd.ewma(prices, span=long_window)
+    result = _short > _long
+    result = adjust_series_of_signals(result, confirmation_window)
+    return remove_consecutive_values(result)
+
+
+def get_dmac_descr(signal, confirmation_window,
+                   short_window, long_window):  # pragma: no cover
     if signal == True:
         result = DESCRIPTION_BUY % (confirmation_window, confirmation_window)
     elif signal == False:

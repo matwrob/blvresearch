@@ -20,6 +20,19 @@ from blvresearch.concat.signals.news_based.news_common_funcs import (
 from blvresearch.concat.signals.utils import remove_consecutive_values
 
 
+DESCRIPTION_BUY = """
+This is a BUY signal generated using company news and its stock return.\n
+On that day company relevant news was published and its stock experienced
+an abnormal positive alpha.
+"""
+
+DESCRIPTION_SELL = """
+This is a SELL signal generated using company news and its stock return.\n
+On that day company relevant news was published and its stock experienced
+an abnormal negative alpha.
+"""
+
+
 FIRST_LOC = 0
 LAST_LOC = -1
 
@@ -59,20 +72,7 @@ def get_signals(data):
     return remove_consecutive_values(result)
 
 
-DESCRIPTION_BUY = """
-This is a BUY signal generated using company news and its stock return.\n
-On that day company relevant news were published and its stock experienced
-an abnormal positive alpha.
-"""
-
-DESCRIPTION_SELL = """
-This is a SELL signal generated using company news and its stock return.\n
-On that day company relevant news were published and its stock experienced
-an abnormal negative alpha.
-"""
-
-
-def get_news1day_descr(signal):
+def get_news1day_descr(signal):  # pragma: no cover
     if signal == True:
         return DESCRIPTION_BUY
     elif signal == False:

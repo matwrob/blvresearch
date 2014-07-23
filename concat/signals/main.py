@@ -33,41 +33,28 @@ from blvresearch.concat.signals.price_based.dmac import (
 )
 
 
-MOVING_AVERAGE_WINDOW = 20
-MOVING_AVERAGE_CONFIRMATION_WINDOW = 3
-
-DMAC_SHORT_WINDOW = 5
-DMAC_LONG_WINDOW = 10
-DMAC_CONFIRMATION_WINDOW = 2
-
-CMO_WINDOW = 9
-
-DOWN_DAYS = 4
-UP_DAYS = 2
-
-RSI_AGITA_PERIODS = 14
-RSI_AGITA_BUY_THRSH = 30
-RSI_AGITA_SELL_THRSH = 50
-
-
 def get_entity_signals(entity_data):
     returns = entity_data['alpha']
     days_to_check, first_loc, last_loc = get_days_to_check(entity_data)
 
     result = dict()
     result['mov_avg'] = get_mov_avg_signals(
-        returns, window=20, confirmation_window=3
+        entity_data, window=20, confirmation_window=5
     )
-    result['dmac'] = get_dmac_signals(returns,
-                                      DMAC_LONG_WINDOW,
-                                      DMAC_SHORT_WINDOW,
-                                      DMAC_CONFIRMATION_WINDOW)
-    result['cmo'] = get_cmo_signals(returns, CMO_WINDOW)
-    result['4down'] = get_4down_signals(returns, DOWN_DAYS, UP_DAYS)
-    result['rsi_agita'] = get_rsi_agita_signals(returns,
-                                                RSI_AGITA_PERIODS,
-                                                RSI_AGITA_BUY_THRSH,
-                                                RSI_AGITA_SELL_THRSH)
+    result['dmac'] = get_dmac_signals(
+        entity_data, long_window=20, short_window=10, confirmation_window=5
+    )
+    result['4down'] = get_4down_signals(
+        entity_data, down_days=4, up_days=2
+    )
+    result['rsi_agita'] = get_rsi_agita_signals(
+        entity_data, periods=14, buy_thrsh=35, sell_thrsh=55
+    )
+    result['cmo'] = get_cmo_signals(
+        entity_data, periods=9
+    )
+
+
     result['news_1day'] = get_news1_signals(days_to_check, returns,
                                             first_loc, last_loc)
     result['news_3days'] = get_news2_signals(days_to_check, returns,

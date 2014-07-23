@@ -1,12 +1,17 @@
 from unittest.mock import patch, Mock
 import pandas as pd
+import numpy as np
 import unittest
 
+from blvresearch.concat.signals.price_based.moving_average import (
+    get_movavg_signals
+)
 from blvresearch.concat.signals.signal_testing import (
     get_total_return_on_signals,
     split_signals_into_good_and_bad,
     SignalReport, StrategyCharacteristics
 )
+
 
 PATH = 'blvresearch/tests/mock_signals/'
 MOCK_SIGNALS = pd.Series.from_csv(PATH + 'mock_signals.csv')
@@ -316,3 +321,125 @@ class TestSplitSignalsIntoGoodAndBad(unittest.TestCase):
             self.assertIn(date, exp['bad'].keys())
             self.assertAlmostEqual(ret, exp['bad'][date],
                                    places=6)
+
+
+PATH = 'blvresearch/tests/mock_ubs_data/ubs_alpha.csv'
+REAL_DATA = {'abs_ret': pd.Series.from_csv(PATH)}
+
+
+class TestMovingAverageResults(unittest.TestCase):
+
+    def test_results1(self):
+        signals = get_movavg_signals(REAL_DATA, window=10,
+                                     confirmation_window=3)
+        total_return = get_total_return_on_signals(signals,
+                                                   REAL_DATA['abs_ret'])
+        self.assertAlmostEqual(total_return, 0.4837079632)
+
+        result = split_signals_into_good_and_bad(signals, REAL_DATA['abs_ret'],
+                                                 window=10)
+        exp_good = pd.Series(
+            {'2012-06-27': 0.08097987955,
+             '2012-08-23': 0.01908241548,
+             '2012-10-16': 0.1397856139,
+             '2012-11-27': 0.01623748745,
+             '2013-02-01': 0.06762256579,
+             '2013-04-11': 0.02352826622,
+             '2013-06-28': 0.03826587042,
+             '2013-07-18': 0.07036628824,
+             '2013-09-20': 0.008666927219,
+             '2013-10-22': 0.1442242617,
+             '2013-11-27': 0.01675056392,
+             '2014-01-08': 0.004956694356,
+             '2014-02-11': 0.01985046592,
+             '2014-05-13': 0.01857769711}
+        )
+        exp_bad = pd.Series(
+            {'2012-09-28': -0.006817392787,
+             '2012-12-14': -0.03800283497,
+             '2012-12-21': -0.02086827919,
+             '2013-01-11': -0.009887626151,
+             '2013-05-30': -0.02598791353,
+             '2013-06-04': -0.01267842224,
+             '2013-06-13': -0.01702467253,
+             '2013-06-24': -0.03353571583,
+             '2013-10-11': -0.01365510432,
+             '2013-12-17': -0.05196902692,
+             '2014-01-24': -0.02253005573,
+             '2014-02-06': -0.01649647034,
+             '2014-05-02': -0.01068458509}
+        )
+        np.testing.assert_array_almost_equal(pd.Series(result['good']),
+                                             exp_good)
+        np.testing.assert_array_almost_equal(pd.Series(result['bad']),
+                                             exp_bad)
+
+    def test_results2(self):
+        signals = get_movavg_signals(REAL_DATA, window=50,
+                                     confirmation_window=5)
+        total_return = get_total_return_on_signals(signals,
+                                                   REAL_DATA['abs_ret'])
+        self.assertAlmostEqual(total_return, 0.002181973751)
+
+        result = split_signals_into_good_and_bad(signals, REAL_DATA['abs_ret'],
+                                                 window=5)
+        exp_good = pd.Series(
+            {'2012-06-29': 0.04040950098,
+             '2012-09-11': 0.001930246149,
+             '2013-02-07': 0.02556506597,
+             '2013-07-04': 0.02442311238,
+             '2013-07-24': 0.02202396502,
+             '2013-10-28': 0.1478023909,
+             '2014-03-07': 0.01298827637}
+        )
+        exp_bad = pd.Series(
+            {'2013-01-04': -0.05738118923,
+             '2013-01-15': -0.01877299979,
+             '2013-05-07': -0.005366658743,
+             '2013-09-27': -0.01349610862,
+             '2013-10-16': -0.03758773936,
+             '2014-01-14': -0.007338360781}
+        )
+        np.testing.assert_array_almost_equal(pd.Series(result['good']),
+                                             exp_good)
+        np.testing.assert_array_almost_equal(pd.Series(result['bad']),
+                                             exp_bad)
+
+    def test_results3(self):
+        signals = get_movavg_signals(REAL_DATA, window=50,
+                                     confirmation_window=2)
+        total_return = get_total_return_on_signals(signals,
+                                                   REAL_DATA['abs_ret'])
+        self.assertAlmostEqual(total_return, 0.241502301)
+
+        result = split_signals_into_good_and_bad(signals, REAL_DATA['abs_ret'],
+                                                 window=5)
+        exp_good = pd.Series(
+            {'2012-06-26': 0.02364005135,
+             '2012-09-06': 0.03763100857,
+             '2012-12-27': 0.003657517423,
+             '2013-01-10': 0.0093833294,
+             '2013-02-04': 0.03990384837,
+             '2013-07-01': 0.02495658707,
+             '2013-07-19': 0.03478792351,
+             '2013-09-24': 0.005665681967,
+             '2013-10-23': 0.08232270576,
+             '2014-01-09': 0.02060837777,
+             '2014-03-04': 0.006584538075}
+        )
+        exp_bad = pd.Series(
+            {'2012-06-20': -0.01747676391,
+             '2012-06-22': -0.03543752622,
+             '2012-08-23': -0.01629040555,
+             '2012-08-31': -0.03065074365,
+             '2013-04-23': -0.008095940065,
+             '2013-04-29': -0.06329333643,
+             '2013-05-02': -0.007683934166,
+             '2013-10-11': -0.001523901508,
+             '2014-02-24': -0.01012365466,
+             '2014-02-28': -0.01084556375}
+        )
+        np.testing.assert_array_almost_equal(pd.Series(result['good']),
+                                             exp_good)
+        np.testing.assert_array_almost_equal(pd.Series(result['bad']),
+                                             exp_bad)

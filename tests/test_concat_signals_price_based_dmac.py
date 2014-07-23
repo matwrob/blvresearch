@@ -3,19 +3,19 @@ import numpy as np
 import unittest
 
 from blvresearch.concat.signals.price_based.dmac import (
-    get_signals
+    get_dmac_signals
 )
 
 PATH = 'blvresearch/tests/mock_ubs_data/ubs_alpha.csv'
 
-MOCK_DATA = {'alpha': pd.Series.from_csv(PATH)}
+MOCK_DATA = {'abs_ret': pd.Series.from_csv(PATH)}
 
 
 class TestGetSignals(unittest.TestCase):
 
     def test_get1(self):
-        res = get_signals(MOCK_DATA, long_window=30, short_window=10,
-                          confirmation_window=5)
+        res = get_dmac_signals(MOCK_DATA, long_window=30, short_window=10,
+                               confirmation_window=5)
         exp = pd.Series(
             {'2012-07-02': False,
              '2012-09-11': True,
@@ -34,8 +34,8 @@ class TestGetSignals(unittest.TestCase):
         np.testing.assert_array_equal(res.dropna(), exp)
 
     def test_get2(self):
-        res = get_signals(MOCK_DATA, long_window=100, short_window=50,
-                          confirmation_window=20)
+        res = get_dmac_signals(MOCK_DATA, long_window=100, short_window=50,
+                               confirmation_window=20)
         exp = pd.Series(
            {'2012-07-23': False,
             '2012-10-15': True,

@@ -3,7 +3,7 @@ import numpy as np
 import unittest
 
 from blvresearch.concat.signals.price_based.cmo_signals import (
-    _calculate_cmo_values, get_signals
+    _calculate_cmo_values, get_cmo_signals
 )
 
 PATH = 'blvresearch/tests/mock_ubs_data/ubs_alpha.csv'
@@ -14,7 +14,7 @@ MOCK_DATA = {'alpha': pd.Series.from_csv(PATH)}
 class TestGetSignals(unittest.TestCase):
 
     def test_get1(self):
-        res = get_signals(MOCK_DATA, periods=9)
+        res = get_cmo_signals(MOCK_DATA, periods=9)
         exp = pd.Series(
             {'2012-07-12': True,
              '2012-08-06': False,
