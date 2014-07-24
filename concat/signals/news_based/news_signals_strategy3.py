@@ -27,7 +27,7 @@ FIRST_LOC = 0
 LAST_LOC = -DAYS_AFTER
 
 
-def get_signals(days_to_check, data, first_loc, last_loc):
+def get_news5days_signals(days_to_check, data, first_loc, last_loc):
     first_day = data.index[first_loc + FIRST_LOC]
     last_day = data.index[last_loc + LAST_LOC]
     result = pd.Series(index=data.index)
