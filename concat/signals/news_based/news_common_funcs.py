@@ -58,6 +58,6 @@ def _has_abnormal_alpha(yesterday, today, tomorrow, mean, std):
 
 
 def _value_is_abnormal(alpha, mean, std):
-    if alpha > mean + std or alpha < mean - std:
+    if alpha > mean + 2 * std or alpha < mean - 2 * std:
         return True
     return False
