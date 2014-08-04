@@ -63,7 +63,7 @@ BUY_THRESHOLD = -50
 SELL_THRESHOLD = 50
 
 
-def get_cmo_signals(data, periods):
+def get_cmo_signals(data, periods=9):
     cmos = _calculate_cmo_values(data['alpha'], periods)
     result = cmos.dropna().map(logic)
     result = _adjust_series_of_signals(result)

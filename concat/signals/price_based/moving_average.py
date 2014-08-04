@@ -56,7 +56,7 @@ future results.
 """
 
 
-def get_movavg_signals(data, window, confirmation_window):
+def get_movavg_signals(data, window=20, confirmation_window=5):
     prices = to_prices(data['abs_ret'], set_first_to_na=True)
     avg = pd.ewma(prices, span=window)
     result = prices > avg

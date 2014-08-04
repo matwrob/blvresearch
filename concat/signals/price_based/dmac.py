@@ -58,7 +58,8 @@ not guarantee future results.
 """
 
 
-def get_dmac_signals(data, long_window, short_window, confirmation_window):
+def get_dmac_signals(data, long_window=20, short_window=10,
+                     confirmation_window=5):
     prices = to_prices(data['abs_ret'], set_first_to_na=True)
     _short = pd.ewma(prices, span=short_window)
     _long = pd.ewma(prices, span=long_window)

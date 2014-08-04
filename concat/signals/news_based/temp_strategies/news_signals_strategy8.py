@@ -44,7 +44,7 @@ def get_news3days_signals(days_to_check, data, first_loc, last_loc):
 def _is_negative_suprise(data, date):
     loc = data.index.get_loc(date)
     if (data['alpha'][date] < 0 and
-        data['alpha'][loc + 1:loc + 1 + DAYS_AFTER].sum() < 0):
+        data['alpha'][loc:loc + 1 + DAYS_AFTER].sum() < 0):
         return True
     return False
 
@@ -52,7 +52,7 @@ def _is_negative_suprise(data, date):
 def _is_positive_suprise(data, date):
     loc = data.index.get_loc(date)
     if (data['alpha'][date] > 0 and
-        data['alpha'][loc + 1:loc + 1 + DAYS_AFTER].sum() > 0):
+        data['alpha'][loc:loc + 1 + DAYS_AFTER].sum() > 0):
         return True
     return False
 

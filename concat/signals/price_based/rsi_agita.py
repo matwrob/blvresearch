@@ -86,7 +86,8 @@ not guarantee future results.
 """
 
 
-def get_rsi_signals(data, periods, buy_thrsh, sell_thrsh, mean_type='exp'):
+def get_rsi_signals(data, periods=14, buy_thrsh=35, sell_thrsh=55,
+                    mean_type='exp'):
     def _logic(x):
         if x < buy_thrsh:
             return True

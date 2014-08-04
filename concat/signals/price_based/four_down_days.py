@@ -36,7 +36,7 @@ two consecutive days.
 """
 
 
-def get_4down_signals(data, down_days, up_days):
+def get_4down_signals(data, down_days=4, up_days=2):
     ups_and_downs = data['alpha'].map(lambda x: 'UP' if x >= 0 else 'DOWN')
     result = _find_consecutive_ups_and_downs(ups_and_downs, down_days, up_days)
     return remove_consecutive_values(result)

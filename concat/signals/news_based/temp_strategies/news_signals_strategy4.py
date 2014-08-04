@@ -25,18 +25,18 @@ from blvresearch.concat.signals.price_based.cmo_signals import (
 )
 
 
-DAYS_AFTER = 3
+DAYS_AFTER = 2
 FIRST_LOC = (8 +  # CMO takes 9 days to generate a signal hence first 9 days
              5)   # cannot give a signal, then we also look back 5 days to find
                   # out if a CMO strategy generated a signal
 LAST_LOC = -DAYS_AFTER
 
 
-def get_signals(days_to_check, returns, first_loc, last_loc):
-    first_day = returns.index[first_loc + FIRST_LOC]
-    last_day = returns.index[last_loc + LAST_LOC]
+def get_signals(days_to_check, data, first_loc, last_loc):
+    first_day = data.index[first_loc + FIRST_LOC]
+    last_day = data.index[last_loc + LAST_LOC]
 
-    cmo_signals = get_cmo_signals(returns, periods=9)
+    cmo_signals = get_cmo_signals(data, periods=9)
     cmo_signals = cmo_signals.reindex(returns.index)
 
     result = pd.Series(index=returns.index)
@@ -44,26 +44,30 @@ def get_signals(days_to_check, returns, first_loc, last_loc):
         loc = returns.index.get_loc(date)
         signal_day = returns.index[loc + DAYS_AFTER]
         if ((cmo_signals[loc - 5:loc + 1 + DAYS_AFTER] == False).any() and
-            _is_negative_suprise(returns, date)):
+            _is_negative_surprise(returns, date)):
+            print('Signal day:', signal_day)
+            print(cmo_signals[loc - 5:loc + 1 + DAYS_AFTER])
             result[signal_day] = False
         elif ((cmo_signals[loc - 5:loc + 1 + DAYS_AFTER] == True).any() and
-              _is_positive_suprise(returns, date)):
+              _is_positive_rsuprise(returns, date)):
+            print('Signal day:', signal_day)
+            print(cmo_signals[loc - 5:loc + 1 + DAYS_AFTER])
             result[signal_day] = True
     return remove_consecutive_values(result)
 
 
-def _is_negative_suprise(returns, date):
+def _is_negative_surprise(returns, date):
     loc = returns.index.get_loc(date)
     if (returns[date] < 0 and
-        returns[loc + 1:loc + 1 + DAYS_AFTER].sum() < 0):
+        returns[loc:loc + 1 + DAYS_AFTER].sum() < 0):
         return True
     return False
 
 
-def _is_positive_suprise(returns, date):
+def _is_positive_surprise(returns, date):
     loc = returns.index.get_loc(date)
     if (returns[date] > 0 and
-        returns[loc + 1:loc + 1 + DAYS_AFTER].sum() > 0):
+        returns[loc:loc + 1 + DAYS_AFTER].sum() > 0):
         return True
     return False
 
@@ -76,14 +80,15 @@ def func(x):
 
 
 def get_cmo_signals(returns, periods):
+    def _cmo_logic(x):
+        if x <= -0.3:
+            return True
+        elif x >= 0.3:
+            return False
     cmos = _calculate_cmo_values(returns, periods)
     result = cmos.dropna().map(_cmo_logic)
     result = _adjust_series_of_signals(result)
     return result
 
 
-def _cmo_logic(x):
-    if x <= -0.3:
-        return True
-    elif x >= 0.3:
-        return False
+

@@ -1,69 +1,60 @@
-from blvresearch.concat.signals.news_based.news_signals_strategy1 import (
-    get_news1day_signals
-)
-from blvresearch.concat.signals.news_based.news_signals_strategy2 import (
-    get_news3days_signals
-)
-from blvresearch.concat.signals.news_based.news_signals_strategy3 import (
-    get_news5days_signals
-)
-from blvresearch.concat.signals.news_based.news_signals_strategy6 import (
-    get_news_movavg_signals
-)
-from blvresearch.concat.signals.news_based.news_signals_strategy7 import (
-    get_news_cmo_signals
-)
 from blvresearch.concat.signals.news_based.news_common_funcs import (
     get_days_to_check
 )
+
+
+from blvresearch.concat.signals.news_based.news_movavg import (
+    get_news_movavg_signals, get_news_movavg_descr
+)
+from blvresearch.concat.signals.news_based.news5days import (
+    get_news5days_signals, get_news5days_descr
+)
+from blvresearch.concat.signals.news_based.news3days import (
+    get_news3days_signals, get_news3days_descr
+)
+from blvresearch.concat.signals.news_based.news1day import (
+    get_news1day_signals, get_news1day_descr
+)
+from blvresearch.concat.signals.news_based.news_cmo import (
+    get_news_cmo_signals, get_news_cmo_descr
+)
+
+
 from blvresearch.concat.signals.price_based.four_down_days import (
-    get_4down_signals
+    get_4down_signals, get_4down_descr
 )
 from blvresearch.concat.signals.price_based.moving_average import (
-    get_movavg_signals
+    get_movavg_signals, get_movavg_descr
 )
 from blvresearch.concat.signals.price_based.cmo_signals import (
-    get_cmo_signals
+    get_cmo_signals, get_cmo_descr
 )
 from blvresearch.concat.signals.price_based.rsi_agita import (
-    get_rsi_signals
+    get_rsi_signals, get_rsi_descr
 )
 from blvresearch.concat.signals.price_based.dmac import (
-    get_dmac_signals
+    get_dmac_signals, get_dmac_descr
 )
+
+
+PRICE_BASED = {'movavg': get_movavg_signals,
+               'dmac': get_dmac_signals,
+               '4down': get_4down_signals,
+               'rsi_agita': get_rsi_signals,
+               'cmo': get_cmo_signals}
+
+NEWS_BASED = {'news1day': get_news1day_signals,
+              'news3days': get_news3days_signals,
+              'news5days': get_news5days_signals,
+              'news_cmo': get_news_cmo_signals,
+              'news_movavg': get_news_movavg_signals}
 
 
 def get_entity_signals(entity_data):
-    returns = entity_data['alpha']
     days_to_check, first_loc, last_loc = get_days_to_check(entity_data)
-
     result = dict()
-    result['mov_avg'] = get_mov_avg_signals(
-        entity_data, window=20, confirmation_window=5
-    )
-    result['dmac'] = get_dmac_signals(
-        entity_data, long_window=20, short_window=10, confirmation_window=5
-    )
-    result['4down'] = get_4down_signals(
-        entity_data, down_days=4, up_days=2
-    )
-    result['rsi_agita'] = get_rsi_agita_signals(
-        entity_data, periods=14, buy_thrsh=35, sell_thrsh=55
-    )
-    result['cmo'] = get_cmo_signals(
-        entity_data, periods=9
-    )
-
-
-    result['news_1day'] = get_news1_signals(days_to_check, returns,
-                                            first_loc, last_loc)
-    result['news_3days'] = get_news2_signals(days_to_check, returns,
-                                             first_loc, last_loc)
-    result['news_5days'] = get_news3_signals(days_to_check, returns,
-                                             first_loc, last_loc)
-    result['news_cmo'] = get_news6_signals(days_to_check, returns,
-                                           first_loc, last_loc)
-    result['news_mov_avg'] = get_news7_signals(days_to_check,
-                                               cummulative_returns,
-                                               first_loc, last_loc)
+    for name, func in PRICE_BASED.items():
+        result[name] = func(entity_data)
+    for name, func in NEWS_BASED.items():
+        result[name] = func(days_to_check, entity_data, first_loc, last_loc)
     return result
